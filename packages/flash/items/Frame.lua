@@ -1,4 +1,6 @@
 -- Frame.lua
+local FlashUtil = import("..util")
+local FlashConfig = import("..config")
 
 local Frame = class("Frame");
 
@@ -26,31 +28,36 @@ function Frame:enter(frame)
 	if self.isEmpty then
 		return;
 	end
+	local detFrame = frame - (self.startFrame + 1)
 	if #self.elements == 0 then
 		for index,elementData in ipairs(self.elementsData) do
 			local elementNode = self:createOneElementByData(elementData, index);
-			local attr = self:getAttrByFrame(elementData, frame);
-			self:setNodeAttrByData(elementNode, attr);
+			local attr = self:getAttrByFrame(elementData, detFrame);
+			FlashUtil.setNodeAttrByData(elementNode, attr);
+			if iskindof(elementNode, FlashConfig.AnmSubTp.Gra) then
+				elementNode:updateFrame(detFrame)
+			end
 			self.elements[#self.elements+1] = elementNode;
 		end
 	else
 		for i=1,#self.elements do
 			local elementData = self.elementsData[i]
 			local elementNode = self.elements[i]
-			local attr = self:getAttrByFrame(elementData, frame);
-			self:setNodeAttrByData(elementNode, attr);
+			local attr = self:getAttrByFrame(elementData, detFrame);
+			FlashUtil.setNodeAttrByData(elementNode, attr);
+			if iskindof(elementNode, FlashConfig.AnmSubTp.Gra) then
+				elementNode:updateFrame(detFrame)
+			end
 		end
 	end
 end
 
-function Frame:getAttrByFrame(elementData, frame)
-	local detFrame = frame - (self.startFrame + 1);
-
-	if detFrame == 0 then
+function Frame:getAttrByFrame(elementData, detFrame)
+	if not self.nextAttr then
 		return elementData.attr;
 	end
 
-	if not self.nextAttr then
+	if detFrame == 0 then
 		return elementData.attr;
 	end
 
@@ -71,90 +78,41 @@ function Frame:createOneElementByData(elementData, index)
 	local elementOrder = layerOrder + index;
 	local doc = self.mc.doc
 
+	local tpData;
+	if childAttr.loop and childAttr.firstFrame then
+		tpData = {};
+		tpData.subTp = FlashConfig.AnmSubTp.Gra;
+		tpData.loop = loop;
+		tpData.firstFrame = firstFrame;
+	end
+
 	local ret;
 	if childAttr.x == 0 and childAttr.y == 0 then
-		local instance = doc:createInstance(childAttr.itemName)
+		local instance = doc:createInstance(childAttr.itemName, tpData)
 		instance:addTo(self.mc, elementOrder, childAttr.name)
 		ret = instance;
 	else
-		local node = cc.Sprite:create();
+		local node = FlashUtil.createNode();
 		node:addTo(self.mc, elementOrder)
-		local instance = doc:createInstance(childAttr.itemName)
+		local instance = doc:createInstance(childAttr.itemName, tpData)
 		instance:addTo(node, 1, childAttr.name):move(childAttr.x, childAttr.y)
 		ret = node;
 	end
 
-	if childAttr.loop and childAttr.firstFrame then
-		-- ret:
-	end
+
 
 	return ret;
-end
-
-function Frame:setNodeAttrByData(node, attr)
-	node:move(attr.x, attr.y);
-
-	local skewX = attr.skewX or 0;
-	node:setRotationSkewX(skewX);
-
-	local skewY = attr.skewY or 0;
-	node:setRotationSkewY(skewY);
-
-	local scaleX = attr.scaleX or 1;
-	node:setScaleX(scaleX);
-
-	local scaleY = attr.scaleY or 1;
-	node:setScaleY(scaleY);
-
-	if attr.blendMode == "add" then
-		node:setBlendFunc(cc.blendFunc(gl.SRC_ALPHA, gl.ONE))
-	else
-		node:setBlendFunc(cc.blendFunc(gl.ONE, gl.ONE))
-	end
-end
-
-local interpolatioByKey = function (key, attr1, attr2, default, percentage, ret)
-	local value1 = attr1[key] or default;
-	local value2 = attr2[key] or default;
-	local newV
-	if value1 == value2 then
-		newV = value1;
-	else
-		newV = value1 + (value2-value1)*percentage;
-	end 
-	ret[key] = newV;
-end
-
-local interpolatioByKey2 = function (key, attr1, attr2, default, percentage, ret)
-	local value1 = attr1[key] or default;
-	local value2 = attr2[key] or default;
-	local newV
-
-	if value1 == value2 then
-		newV = value1;
-	else
-		local sub = value2-value1;
-		if sub < - 180 then
-			sub = sub + 360
-		end
-
-		if sub > 180 then
-			sub = sub - 360;
-		end
-		newV = value1 + sub*percentage;
-	end 
-	ret[key] = newV;
 end
 
 function Frame:interpolatioAttr(attr1, attr2, percentage)
 	local ret = {};
 
-	interpolatioByKey("x", attr1, attr2, 0, percentage, ret)
-	interpolatioByKey("y", attr1, attr2, 0, percentage, ret)
-	interpolatioByKey2("skewX", attr1, attr2, 0, percentage, ret)
-	interpolatioByKey2("skewY", attr1, attr2, 0, percentage, ret)
-	interpolatioByKey("scaleX", attr1, attr2, 1, percentage, ret)
-	interpolatioByKey("scaleY", attr1, attr2, 1, percentage, ret)
+	FlashUtil.interpolatioByKey("x", attr1, attr2, 0, percentage, ret)
+	FlashUtil.interpolatioByKey("y", attr1, attr2, 0, percentage, ret)
+	FlashUtil.interpolatioByKeySkew("skewX", attr1, attr2, 0, percentage, ret)
+	FlashUtil.interpolatioByKeySkew("skewY", attr1, attr2, 0, percentage, ret)
+	FlashUtil.interpolatioByKey("scaleX", attr1, attr2, 1, percentage, ret)
+	FlashUtil.interpolatioByKey("scaleY", attr1, attr2, 1, percentage, ret)
 
 	return ret;
 end
