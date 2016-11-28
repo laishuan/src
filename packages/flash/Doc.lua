@@ -30,21 +30,21 @@ function Doc:ctor(fileName, flash)
 	self.linkFiles = docTable.linkFiles;
 end
 
-function Doc:createInstance(itemName)
+function Doc:createInstance(itemName, subTpData)
 	local itemData;
 	if itemName == "scene" then
 		itemData = self.scene;
 	else
 		itemData = self.library[itemName];
 	end
-	return self:createInsByData(itemData);
+	return self:createInsByData(itemData, subTpData);
 end
 
-function Doc:createInsByData(itemData)
+function Doc:createInsByData(itemData, subTpData)
 
 	assert(itemData, "Doc:createInsByData, itemData is nil")
 	-- dump(itemData)
-	return FlashUtil["create" .. itemData.tp](itemData, self);
+	return FlashUtil["create" .. itemData.tp](itemData, self, subTpData);
 end
 
 return Doc;

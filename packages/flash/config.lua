@@ -12,4 +12,7 @@ _M.itemTypes = {
 	Txt = "Text",
 	LK = "Link",
 }
+_M.AnmSubTp = {
+	Gra = "Graphic",
+}
 return _M;
