@@ -14,7 +14,7 @@ function Graphic:ctor(data, doc, subTpData)
 	self.firstFrame = subTpData.firstFrame
 end
 
-function Graphic:updateFrame(frame)
+function Graphic:updateFrame(frame, det)
 	local realFrame;
 	if self.loop == "loop" then
 		realFrame = self.firstFrame + frame;
@@ -33,8 +33,7 @@ function Graphic:updateFrame(frame)
 	if self.loop == "single frame" then
 		realFrame = self.firstFrame;
 	end 
-
-	self.timeline:updateFrame(realFrame)
+	self.timeline:updateFrame(realFrame, det)
 end
 
 return Graphic;

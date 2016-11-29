@@ -1,4 +1,6 @@
 -- Layer.lua
+local FlashConfig = import("..config")
+local FlashUtil = import("..util")
 
 local Frame = import(".Frame");
 
@@ -12,39 +14,85 @@ function Layer:ctor(data, index, timeline)
 	self.layerType = data.layerType;
 	self.visible = data.visible
 	self.frameCount = data.frameCount;
-	local framesData = data.frames
+	self.elementsCache = {};
 
+	local framesData = data.frames
 	self.keyFrames = {};
-	local endFrameArr = {};
+
 	for i=1,#framesData do
 		local frameData = framesData[i]
-		local keyFrame = Frame:create(frameData, self)
-		if keyFrame:isMotion() then
-			local nextFrameData = framesData[i+1];
-			if nextFrameData then
-				keyFrame:setNextAttrByFrameData(nextFrameData)
-			end
-		end
+		local keyFrame = self:createKeyFrameByData(i, framesData)
 		self.keyFrames[#self.keyFrames+1] = keyFrame;
-		endFrameArr[#endFrameArr+1] = frameData.startFrame + frameData.duration
+		self:cacheFrameElements(keyFrame)
 	end
 
-	local keyFrameIndex = 1;
 	self.frames = {};
-	for i=1,self.frameCount do
-		local frameObj;
-		if i <= endFrameArr[keyFrameIndex] then
-			frameObj = self.keyFrames[keyFrameIndex];
-		else
-			keyFrameIndex = keyFrameIndex + 1;
-			frameObj = self.keyFrames[keyFrameIndex];
+	for index,keyFrame in ipairs(self.keyFrames) do
+		for i=1,keyFrame.duration do
+			self.frames[#self.frames+1] = keyFrame;
 		end
-		assert(frameObj, string.format("Layer:ctor - bad layer data of %s, %s", timeline.mc.name, timeline.mc.doc.fileName))
-		self.frames[#self.frames+1] = frameObj;
 	end
 end
 
-function Layer:updateFrame(frame)
+function Layer:cacheFrameElements(frame)
+	local elementDatas = frame.elementsData;
+	local frameIndex = frame.index;
+
+	for index,elementData in ipairs(elementDatas) do
+		self:cacheOneElement(elementData, index, frameIndex)
+	end
+end
+
+function Layer:cacheOneElement(elementData, eIndex, fIndex)
+	local childAttr = elementData.childAttr
+	local name = childAttr.itemName;
+	local realtp;
+	local tp = childAttr.tp
+	if childAttr.loop 
+		and tp == FlashConfig.itemTypes.Anm then
+		realtp = FlashConfig.AnmSubTp.Gra;
+	else
+		realtp = tp
+	end
+
+	local cacheKey = FlashUtil.getElementCacheKey(name, realtp, eIndex, fIndex);
+	local lastCacheKey =  FlashUtil.getElementCacheKey(name, realtp, eIndex, fIndex-1);
+	local lastCacheData = self.elementsCache[lastCacheKey];
+	local cacheData
+	if lastCacheData then
+		cacheData = lastCacheData;
+	else
+		cacheData = {};
+	end
+	self.elementsCache[cacheKey] = cacheData
+	local insName = childAttr.insName
+	if insName then
+		printInfo("insName:" .. insName)
+		self.timeline:addInsNameData(insName, cacheData, childAttr)
+	end
+end
+
+function Layer:getElementCacheData(key)
+	return self.elementsCache[key]
+end
+
+function Layer:createKeyFrameByData(index, framesData)
+	local keyFrame;
+	local lastFrameData = framesData[index-1];
+	local curFrameData = framesData[index];
+	local nextFrameData = framesData[index+1];
+
+	keyFrame = Frame:create(curFrameData, index, self)
+	if keyFrame:isMotion() then
+		if nextFrameData then
+			keyFrame:setNextAttrByFrameData(nextFrameData)
+		end
+	end
+
+	return keyFrame;
+end
+
+function Layer:updateFrame(frame, det)
 	if frame > self.frameCount then
 		if self.curFrameObj then
 			self.curFrameObj:exit();
@@ -54,18 +102,26 @@ function Layer:updateFrame(frame)
 		return;
 	end
 
-	if self.curFrame ~= frame then
-		local newFrameObj = self.frames[frame];
-		if self.curFrameObj ~= newFrameObj then
-			if self.curFrameObj then
-				self.curFrameObj:exit();
-			end
-			self.curFrameObj = newFrameObj;
-			newFrameObj:enter(frame);
-		else
-			self.curFrameObj:enter(frame);
+	local newFrameObj = self.frames[frame];
+	if self.curFrameObj ~= newFrameObj then
+		if self.curFrameObj then
+			self.curFrameObj:exit(newFrameObj);
 		end
-		self.curFrame = frame;
+		self.curFrameObj = newFrameObj;
+		newFrameObj:enter(frame, det);
+	else
+		self.curFrameObj:enter(frame, det);
+	end
+
+end
+
+function Layer:cleanup()
+	for k,v in pairs(self.elementsCache) do
+		if v.ins then
+			v.ins:removeSelf()
+			v.ins:release()
+			v.ins = nil;
+		end
 	end
 end
 

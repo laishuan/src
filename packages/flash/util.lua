@@ -27,7 +27,7 @@ function _M.createAnim(itemData, doc, subTpData)
 		local Mc = import(".items.Mc", PATH)
 		return Mc:create(itemData, doc);
 	else
-		local Cls = import(".items." .. subTpData.subTp);
+		local Cls = import(".items." .. subTpData.subTp, PATH);
 		return Cls:create(itemData, doc, subTpData)
 	end
 end
@@ -80,6 +80,19 @@ function _M.interpolatioByKeySkew (key, attr1, attr2, default, percentage, ret)
 	ret[key] = newV;
 end
 
+function _M.interpolatioAttr(attr1, attr2, percentage)
+	local ret = {};
+
+	_M.interpolatioByKey("x", attr1, attr2, 0, percentage, ret)
+	_M.interpolatioByKey("y", attr1, attr2, 0, percentage, ret)
+	_M.interpolatioByKeySkew("skewX", attr1, attr2, 0, percentage, ret)
+	_M.interpolatioByKeySkew("skewY", attr1, attr2, 0, percentage, ret)
+	_M.interpolatioByKey("scaleX", attr1, attr2, 1, percentage, ret)
+	_M.interpolatioByKey("scaleY", attr1, attr2, 1, percentage, ret)
+
+	return ret;
+end
+
 function _M.setNodeAttrByData(node, attr)
 	node:move(attr.x, attr.y);
 
@@ -100,6 +113,18 @@ function _M.setNodeAttrByData(node, attr)
 	else
 		node:setBlendFunc(cc.blendFunc(gl.ONE, gl.ONE))
 	end
+end
+
+function _M.getElementCacheKey(name, tp, eIndex, fIndex)
+	return  name .. "_" .. tp .. "_" .. eIndex .. "_" .. fIndex;
+end
+
+function _M.kindOfClass(obj, className)
+	local class = obj.class
+	if class and class.__cname == className then
+		return true
+	end
+	return false
 end
 
 return _M;
