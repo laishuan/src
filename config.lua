@@ -24,3 +24,5 @@ CC_DESIGN_RESOLUTION = {
         end
     end
 }
+
+CUR_ANIM_INTERVAL = 1.0/60

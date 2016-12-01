@@ -22,14 +22,15 @@ end
 function Timeline:addInsNameData(insName, cacheData, childAttr)
 	local doc = self.mc.doc
 	local itemName = childAttr.itemName
-	local tpData;
+	local tpData = {};
 
 	if childAttr.loop and childAttr.firstFrame then
-		tpData = {};
 		tpData.subTp = FlashConfig.AnmSubTp.Gra
 		tpData.loop = childAttr.loop;
 		tpData.firstFrame = childAttr.firstFrame;
 	end
+
+	tpData.group = self.mc.group
 
 	local ins, child
 	self.insNameCache[insName] = cacheData;

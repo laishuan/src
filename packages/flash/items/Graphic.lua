@@ -8,10 +8,11 @@ local Graphic = class("Graphic", cc.Sprite)
 function Graphic:ctor(data, doc, subTpData)
 	self.doc = doc;
 	self.name = data.name;
-	self.timeline = Timeline:create(data.timeline, self);
-	self.frameCount = self.timeline.frameCount;
 	self.loop = subTpData.loop;
 	self.firstFrame = subTpData.firstFrame
+	self.group = subTpData.group
+	self.timeline = Timeline:create(data.timeline, self);
+	self.frameCount = self.timeline.frameCount;
 end
 
 function Graphic:updateFrame(frame, det)
@@ -34,6 +35,11 @@ function Graphic:updateFrame(frame, det)
 		realFrame = self.firstFrame;
 	end 
 	self.timeline:updateFrame(realFrame, det)
+end
+
+function Graphic:removeSelfAndClean( ... )
+	self:removeSelf()
+	self.timeline:cleanup()
 end
 
 return Graphic;

@@ -123,10 +123,11 @@ function Frame:createOneElementByData(elementData, index)
 	local itemName = childAttr.itemName
 	local tp = childAttr.tp;
 
-	local tpData;
+	local tpData = {}
+	tpData.group = self.mc.group
+	assert(tpData.group, "Frame:createOneElementByData - must had group, name:" .. self.mc.name)
 	if childAttr.loop and childAttr.firstFrame then
 		tp = FlashConfig.AnmSubTp.Gra
-		tpData = {};
 		tpData.subTp = tp
 		tpData.loop = childAttr.loop;
 		tpData.firstFrame = childAttr.firstFrame;

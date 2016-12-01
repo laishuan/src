@@ -17,34 +17,39 @@ function _M.getPlistPath (fileName)
 end
 
 function _M.createImage(itemData, doc)
-	local sprite = cc.Sprite:createWithSpriteFrameName(itemData.name);
+	local sprite = cc.Sprite:createWithSpriteFrameName(itemData.path);
 	sprite:setAnchorPoint(cc.p(0, 1));
 	return sprite;
 end
 
 function _M.createAnim(itemData, doc, subTpData)
-	if not subTpData then
+	if not subTpData.subTp then
 		local Mc = import(".items.Mc", PATH)
-		return Mc:create(itemData, doc);
+		return Mc:create(itemData, doc, subTpData.group);
 	else
 		local Cls = import(".items." .. subTpData.subTp, PATH);
 		return Cls:create(itemData, doc, subTpData)
 	end
 end
 
-function _M.createNode(itemData, doc)
+function _M.createNode(itemData, doc, subTpData)
 	local node = cc.Sprite:create()
 	return node;
 end
 
-function _M.createText(itemData, doc)
+function _M.createText(itemData, doc, subTpData)
 	local node = cc.Node:create()
 	return node;
 end
 
-function _M.createLink(itemData, doc)
+function _M.createLink(itemData, doc, subTpData)
 	local flash = doc.flash;
-	return flash:createMC(itemData.flashName, itemData.itemName);
+	return flash:createMC(itemData.flashName, itemData.itemName, subTpData);
+end
+
+function _M.createFSprite(itemData, doc, subTpData)
+	local FSprite = import(".items.FSprite", PATH)
+	return FSprite:create(itemData, doc, subTpData);
 end
 
 function _M.interpolatioByKey (key, attr1, attr2, default, percentage, ret)
@@ -110,8 +115,8 @@ function _M.setNodeAttrByData(node, attr)
 
 	if attr.blendMode == "add" then
 		node:setBlendFunc(cc.blendFunc(gl.SRC_ALPHA, gl.ONE))
-	else
-		node:setBlendFunc(cc.blendFunc(gl.ONE, gl.ONE))
+	-- else
+	-- 	node:setBlendFunc(cc.blendFunc(gl.ONE, gl.ONE))
 	end
 end
 

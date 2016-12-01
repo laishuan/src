@@ -3,9 +3,11 @@ local Timeline = import(".Timeline");
 
 local Mc = class("Mc", cc.Sprite)
 
-function Mc:ctor(data, doc)
+function Mc:ctor(data, doc, group)
 	self.doc = doc;
 	self.name = data.name;
+	assert(group, "Mc-ctor: group must not be null, name:" .. self.name)
+	self.group = group
 	self.frameRate = doc.fileInfo.frameRate
 	self.perFrameTime = 1000/self.frameRate;
 	self.timeline = Timeline:create(data.timeline, self);
@@ -21,14 +23,13 @@ function Mc:ctor(data, doc)
 	self.total = 0;
 end
 
+
+
 function Mc:onEnter()
 	-- printInfo("onEnter:");
 	self.isEnter = true;
 	if self.isPlaying then
-	    local function update(dt)
-	    	self:update(dt*1000)
-	    end
-		self:scheduleUpdate(update);
+		self.group:addMc(self)
 	end
 end
 
@@ -36,15 +37,15 @@ function Mc:onCleanup()
 	
 end
 
-function Mc:setSpeed(setSpeed)
-	
+function Mc:setSpeed(speed)
+	self.group:setSpeed(speed)
 end
 
 function Mc:onExit()
 	-- printInfo("onExit:")
 	self.isEnter = false;
 	if self.isPlaying then
-		self:unscheduleUpdate();
+		self.group:removeMc(self)
 	end
 end
 
@@ -87,12 +88,9 @@ function Mc:setUpdateStatus(isPlaying)
 	else
 		if self.isPlaying ~= isPlaying then
 			if isPlaying then
-			    local function update(dt)
-			    	self:update(dt*1000)
-			    end
-				self:scheduleUpdate(update);
+				self.group:addMc(self)
 			else
-				self:unscheduleUpdate()
+				self.group:removeMc(self)
 			end
 		end
 		self.isPlaying = isPlaying;
@@ -101,12 +99,17 @@ end
 
 function Mc:update(dt)
 	self.total = self.total + dt;
+
 	local curFrame = math.floor(self.total/self.perFrameTime);
 	local det = (self.total%self.perFrameTime)/self.perFrameTime
 	local frameCount = self.timeline.frameCount;
 	if curFrame >= frameCount then
 		self.total = self.total - self.oneLoopTime
 		curFrame =  math.floor(self.total/self.perFrameTime);
+	end
+
+	if det < 0.01 then
+		det = 0
 	end
 	self.timeline:updateFrame(curFrame, det)
 end

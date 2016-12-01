@@ -1,12 +1,14 @@
 local FlashUtil = import(".util")
 local FlashConfig = import(".config");
 local Doc = import(".Doc");
+local McGroup = import(".McGroup")
 
 local Flash = {}
 
 Flash.docs = {};
+Flash.defaultGroup = McGroup:create("___defaule___")
 
-function Flash:createMC(fileName, itemName)
+function Flash:createMC(fileName, itemName, group)
 	assert(fileName and type(fileName) == "string", "Flash:createMC - invalid param fileName");
 	assert((not itemName) or type(itemName) == "string", "Flash:createMC - invalid param itemName");
 	itemName = itemName or "scene";
@@ -16,7 +18,9 @@ function Flash:createMC(fileName, itemName)
 		doc = Doc:create(fileName, self);
 		self.docs[fileName] = doc;
 	end
-	return doc:createInstance(itemName);
+	local data = {}
+	data.group = group or McGroup:create()
+	return doc:createInstance(itemName, data);
 end
 
 function Flash:createGroup(groupName)

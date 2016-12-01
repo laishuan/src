@@ -45,6 +45,7 @@ end
 
 function Layer:cacheOneElement(elementData, eIndex, fIndex)
 	local childAttr = elementData.childAttr
+	-- dump(childAttr)
 	local name = childAttr.itemName;
 	local realtp;
 	local tp = childAttr.tp
@@ -67,7 +68,7 @@ function Layer:cacheOneElement(elementData, eIndex, fIndex)
 	self.elementsCache[cacheKey] = cacheData
 	local insName = childAttr.insName
 	if insName then
-		printInfo("insName:" .. insName)
+		-- printInfo("insName:" .. insName)
 		self.timeline:addInsNameData(insName, cacheData, childAttr)
 	end
 end
@@ -117,9 +118,14 @@ end
 
 function Layer:cleanup()
 	for k,v in pairs(self.elementsCache) do
-		if v.ins then
-			v.ins:removeSelf()
-			v.ins:release()
+		local ins = v.ins
+		if ins then
+			if ins.removeSelfAndClean then
+				ins:removeSelfAndClean()
+			else
+				ins:removeSelf()
+			end
+			ins:release()
 			v.ins = nil;
 		end
 	end

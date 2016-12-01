@@ -11,6 +11,8 @@ _M.itemTypes = {
 	Nod = "Node",
 	Txt = "Text",
 	LK = "Link",
+	Spt = "FSprite"
+
 }
 _M.AnmSubTp = {
 	Gra = "Graphic",
