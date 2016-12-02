@@ -52,11 +52,11 @@ function Frame:enter(frame, det)
 		local data = self.elements[i]
 		local ins = data.ins
 		local attr = self:getAttrByFrame(elementData, detFrame+det);
-		FlashUtil.setNodeAttrByData(ins, attr);
 		local realElement = data.child or ins
 		if FlashUtil.kindOfClass(realElement, FlashConfig.AnmSubTp.Gra) then
 			realElement:updateFrame(detFrame, det)
 		end
+		FlashUtil.setNodeAttrByData(ins, attr);
 	end
 end
 

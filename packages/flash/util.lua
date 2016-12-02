@@ -19,26 +19,34 @@ end
 function _M.createImage(itemData, doc)
 	local sprite = cc.Sprite:createWithSpriteFrameName(itemData.path);
 	sprite:setAnchorPoint(cc.p(0, 1));
+	sprite:setCascadeOpacityEnabled(true)
 	return sprite;
 end
 
 function _M.createAnim(itemData, doc, subTpData)
+	local ret
 	if not subTpData.subTp then
 		local Mc = import(".items.Mc", PATH)
-		return Mc:create(itemData, doc, subTpData.group);
+		ret = Mc:create(itemData, doc, subTpData.group);
 	else
 		local Cls = import(".items." .. subTpData.subTp, PATH);
-		return Cls:create(itemData, doc, subTpData)
+		ret = Cls:create(itemData, doc, subTpData)
 	end
+	ret:setCascadeOpacityEnabled(true)
+	return ret
 end
 
 function _M.createNode(itemData, doc, subTpData)
-	local node = cc.Sprite:create()
+	local Fnode = import(".items.FNode", PATH)
+	local node = Fnode:create()
+	node:setCascadeOpacityEnabled(true)
 	return node;
 end
 
 function _M.createText(itemData, doc, subTpData)
-	local node = cc.Node:create()
+	local Fnode = import(".items.FNode", PATH)
+	local node = Fnode:create()
+	node:setCascadeOpacityEnabled(true)
 	return node;
 end
 
@@ -49,7 +57,9 @@ end
 
 function _M.createFSprite(itemData, doc, subTpData)
 	local FSprite = import(".items.FSprite", PATH)
-	return FSprite:create(itemData, doc, subTpData);
+	local ret = FSprite:create(itemData, doc, subTpData);
+	ret:setCascadeOpacityEnabled(true)
+	return ret
 end
 
 function _M.interpolatioByKey (key, attr1, attr2, default, percentage, ret)
@@ -94,6 +104,7 @@ function _M.interpolatioAttr(attr1, attr2, percentage)
 	_M.interpolatioByKeySkew("skewY", attr1, attr2, 0, percentage, ret)
 	_M.interpolatioByKey("scaleX", attr1, attr2, 1, percentage, ret)
 	_M.interpolatioByKey("scaleY", attr1, attr2, 1, percentage, ret)
+	_M.interpolatioByKey("alpha", attr1, attr2, 255, percentage, ret)
 
 	return ret;
 end
@@ -115,9 +126,10 @@ function _M.setNodeAttrByData(node, attr)
 
 	if attr.blendMode == "add" then
 		node:setBlendFunc(cc.blendFunc(gl.SRC_ALPHA, gl.ONE))
-	-- else
-	-- 	node:setBlendFunc(cc.blendFunc(gl.ONE, gl.ONE))
 	end
+
+	local alpha = attr.alpha or 255
+	node:setOpacity(math.floor(alpha))
 end
 
 function _M.getElementCacheKey(name, tp, eIndex, fIndex)

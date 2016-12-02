@@ -1,8 +1,9 @@
 -- FSprite.lua
 
 local FlashUtil = import("..util")
+local FNode = import('.FNode')
 
-local FSprite = class("FSprite", cc.Sprite)
+local FSprite = class("FSprite", FNode)
 
 function FSprite:ctor(data, doc, subTpData)
 	self.doc = doc;

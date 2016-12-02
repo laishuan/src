@@ -2,8 +2,9 @@
 
 -- Graphic.lua
 local Timeline = import(".Timeline");
+local FNode = import('.FNode')
 
-local Graphic = class("Graphic", cc.Sprite)
+local Graphic = class("Graphic", FNode)
 
 function Graphic:ctor(data, doc, subTpData)
 	self.doc = doc;

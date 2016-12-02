@@ -24,7 +24,7 @@ function MainScene:onCreate()
     -- waitAnim:setSpeed(1)
     x = math.random(500, 600)
     y = math.random(200, 300)
-    local waitAnim = Flash:createMC("mojiaoxiaobinggou"):addTo(self):move(0, 0)
+    local waitAnim = Flash:createMC("mojiaoxiaobinggou"):addTo(self):move(x, y)
     printLog("Flash", "All run")
     printInfo((nil == nil))
 

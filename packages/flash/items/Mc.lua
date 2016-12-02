@@ -1,7 +1,8 @@
 -- Mc.lua
 local Timeline = import(".Timeline");
+local FNode = import('.FNode')
 
-local Mc = class("Mc", cc.Sprite)
+local Mc = class("Mc", FNode)
 
 function Mc:ctor(data, doc, group)
 	self.doc = doc;
