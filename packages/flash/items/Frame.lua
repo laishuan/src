@@ -8,6 +8,7 @@ function Frame:ctor(data, index, layer)
 	self.layer = layer;
 	self.mc = layer.mc;
 	self.index = index;
+	self.name = data.name
 
 	self.startFrame = data.startFrame;
 	self.duration = data.duration
@@ -123,14 +124,11 @@ function Frame:createOneElementByData(elementData, index)
 	local itemName = childAttr.itemName
 	local tp = childAttr.tp;
 
-	local tpData = {}
+	local tpData = childAttr
 	tpData.group = self.mc.group
 	assert(tpData.group, "Frame:createOneElementByData - must had group, name:" .. self.mc.name)
 	if childAttr.loop and childAttr.firstFrame then
 		tp = FlashConfig.AnmSubTp.Gra
-		tpData.subTp = tp
-		tpData.loop = childAttr.loop;
-		tpData.firstFrame = childAttr.firstFrame;
 	end
 	local cackeKey = FlashUtil.getElementCacheKey(itemName, tp, index, self.index)
 	local cacheData = self.layer:getElementCacheData(cackeKey)

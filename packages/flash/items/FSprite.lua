@@ -11,11 +11,11 @@ function FSprite:ctor(data, doc, subTpData)
 	self.group = subTpData.group
 	self.elementsData = data.element
 	self.elements = {}
-
+	self.insNameCache = {};
 	for _,elementData in ipairs(self.elementsData) do
-		local elementNode = self:createOneElement(elementData, doc, self.group)
-		elementNode:addTo(self)
-		self.elements[#self.elements+1] = elementNode
+		local ins, child = self:createOneElement(elementData, doc, self.group)
+		ins:addTo(self)
+		self.elements[#self.elements+1] = ins
 	end
 end
 
@@ -23,14 +23,9 @@ function FSprite:createOneElement(elementData, doc, group)
 	local attr = elementData.attr;
 	local childAttr = elementData.childAttr;
 	local itemName = childAttr.itemName
-	local tpData = {}
+	local tpData = childAttr
 	local ins, child
 	tpData.group = group
-	if childAttr.loop and childAttr.firstFrame then
-		tpData.subTp = FlashConfig.AnmSubTp.Gra
-		tpData.loop = childAttr.loop;
-		tpData.firstFrame = childAttr.firstFrame;
-	end
 
 	if childAttr.x == 0 and childAttr.y == 0 then
 		ins = doc:createInstance(childAttr.itemName, tpData)
@@ -42,7 +37,15 @@ function FSprite:createOneElement(elementData, doc, group)
 		child:addTo(ins, 1, childAttr.name):move(childAttr.x, childAttr.y)
 	end
 	FlashUtil.setNodeAttrByData(ins, attr)
+	local insName = childAttr.insName;
+	if childAttr.insName then
+		self.insNameCache[childAttr.insName] = child or ins;
+	end
 	return ins, child
+end
+
+function FSprite:getChildByName(insName)
+	return self.insNameCache[insName]
 end
 
 function FSprite:removeSelfAndClean()

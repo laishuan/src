@@ -36,14 +36,15 @@ end
 
 function Layer:cacheFrameElements(frame)
 	local elementDatas = frame.elementsData;
-	local frameIndex = frame.index;
 
 	for index,elementData in ipairs(elementDatas) do
-		self:cacheOneElement(elementData, index, frameIndex)
+		self:cacheOneElement(elementData, index, frame)
 	end
 end
 
-function Layer:cacheOneElement(elementData, eIndex, fIndex)
+function Layer:cacheOneElement(elementData, eIndex, frame)
+	local fIndex = frame.index;
+	local frameName = frame.name
 	local childAttr = elementData.childAttr
 	-- dump(childAttr)
 	local name = childAttr.itemName;
@@ -67,6 +68,11 @@ function Layer:cacheOneElement(elementData, eIndex, fIndex)
 	end
 	self.elementsCache[cacheKey] = cacheData
 	local insName = childAttr.insName
+	if not insName then
+		if frameName then
+			insName = frameName .. "__" .. eIndex;
+		end
+	end
 	if insName then
 		-- printInfo("insName:" .. insName)
 		self.timeline:addInsNameData(insName, cacheData, childAttr)

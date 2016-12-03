@@ -25,12 +25,12 @@ end
 
 function _M.createAnim(itemData, doc, subTpData)
 	local ret
-	if not subTpData.subTp then
+	if subTpData.loop and subTpData.firstFrame then
+		local Cls = import(".items.Graphic", PATH);
+		ret = Cls:create(itemData, doc, subTpData)
+	else
 		local Mc = import(".items.Mc", PATH)
 		ret = Mc:create(itemData, doc, subTpData.group);
-	else
-		local Cls = import(".items." .. subTpData.subTp, PATH);
-		ret = Cls:create(itemData, doc, subTpData)
 	end
 	ret:setCascadeOpacityEnabled(true)
 	return ret
@@ -44,10 +44,37 @@ function _M.createNode(itemData, doc, subTpData)
 end
 
 function _M.createText(itemData, doc, subTpData)
-	local Fnode = import(".items.FNode", PATH)
-	local node = Fnode:create()
-	node:setCascadeOpacityEnabled(true)
-	return node;
+	local label;
+	-- dump(subTpData)
+	local ttfPath = "fonts/" .. subTpData.face .. ".ttf";
+	local fullPath = cc.FileUtils:getInstance():fullPathForFilename(ttfPath);
+
+	if not io.exists(fullPath) then
+		ttfPath = "fonts/arial.ttf"
+	end
+	local ttfConfig = {};
+    ttfConfig.fontFilePath = ttfPath
+    ttfConfig.fontSize = subTpData.size
+
+    local alignment;
+    if subTpData.alignment == "left"
+    	or subTpData.alignment == "justify" then
+    	alignment = cc.TEXT_ALIGNMENT_LEFT;
+	elseif subTpData.alignment == "center" then
+		alignment = cc.TEXT_ALIGNMENT_CENTER
+	elseif subTpData.alignment == "right" then
+		alignment = cc.TEXT_ALIGNMENT_RIGHT
+    end
+
+    label =  cc.Label:createWithTTF(ttfConfig, subTpData.txt, alignment, subTpData.width)
+    label:setAnchorPoint(cc.p(0,1.0))
+    printInfo(tonumber(subTpData.g, 10))
+    label:setTextColor(cc.c4b(tonumber(subTpData.r, 10), 
+    	tonumber(subTpData.g, 10), 
+    	tonumber(subTpData.b, 10), 
+    	255))
+	label:setCascadeOpacityEnabled(true)
+	return label;
 end
 
 function _M.createLink(itemData, doc, subTpData)
