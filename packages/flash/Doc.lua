@@ -44,7 +44,10 @@ end
 function Doc:createInsByData(itemData, data)
 
 	assert(itemData, "Doc:createInsByData, itemData is nil")
-	return FlashUtil["create" .. itemData.tp](itemData, self, data);
+	local ins = FlashUtil["create" .. itemData.tp](itemData, self, data);
+	ins:setCascadeOpacityEnabled(true)
+	ins:setCascadeColorEnabled(true)
+	return ins;
 end
 
 return Doc;

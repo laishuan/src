@@ -17,4 +17,8 @@ _M.itemTypes = {
 _M.AnmSubTp = {
 	Gra = "Graphic",
 }
+
+_M.defaultNodeName = "__DefaultNode";
+_M.defaultTxtName = "__Text";
+
 return _M;

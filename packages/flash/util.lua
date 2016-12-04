@@ -19,7 +19,6 @@ end
 function _M.createImage(itemData, doc)
 	local sprite = cc.Sprite:createWithSpriteFrameName(itemData.path);
 	sprite:setAnchorPoint(cc.p(0, 1));
-	sprite:setCascadeOpacityEnabled(true)
 	return sprite;
 end
 
@@ -30,31 +29,19 @@ function _M.createAnim(itemData, doc, subTpData)
 		ret = Cls:create(itemData, doc, subTpData)
 	else
 		local Mc = import(".items.Mc", PATH)
-		ret = Mc:create(itemData, doc, subTpData.group);
+		ret = Mc:create(itemData, doc, subTpData);
 	end
-	ret:setCascadeOpacityEnabled(true)
 	return ret
 end
 
 function _M.createNode(itemData, doc, subTpData)
 	local Fnode = import(".items.FNode", PATH)
 	local node = Fnode:create()
-	node:setCascadeOpacityEnabled(true)
 	return node;
 end
 
 function _M.createText(itemData, doc, subTpData)
 	local label;
-	-- dump(subTpData)
-	local ttfPath = "fonts/" .. subTpData.face .. ".ttf";
-	local fullPath = cc.FileUtils:getInstance():fullPathForFilename(ttfPath);
-
-	if not io.exists(fullPath) then
-		ttfPath = "fonts/arial.ttf"
-	end
-	local ttfConfig = {};
-    ttfConfig.fontFilePath = ttfPath
-    ttfConfig.fontSize = subTpData.size
 
     local alignment;
     if subTpData.alignment == "left"
@@ -65,15 +52,34 @@ function _M.createText(itemData, doc, subTpData)
 	elseif subTpData.alignment == "right" then
 		alignment = cc.TEXT_ALIGNMENT_RIGHT
     end
+    local fontSize = subTpData.size
+    local fontType = subTpData.face;
 
-    label =  cc.Label:createWithTTF(ttfConfig, subTpData.txt, alignment, subTpData.width)
+	local ttfConfig = {};
+    ttfConfig.fontSize = subTpData.size
+	local ttfPath = "fonts/" .. subTpData.face .. ".ttf";
+	local fullPath = cc.FileUtils:getInstance():fullPathForFilename(ttfPath);
+	if io.exists(fullPath) then
+	    ttfConfig.fontFilePath = ttfPath
+	else
+		ttfConfig.fontFilePath = "fonts/STXINGKA.ttf";
+	end
+    ttfConfig.glyphs=cc.GLYPHCOLLECTION_DYNAMIC
+	ttfConfig.distanceFieldEnabled = true
+	label = cc.Label:create()
+	label:setTTFConfig(ttfConfig)
+	label:setString(subTpData.txt)
+	-- label:setString("你好")
+
+	-- label =  cc.Label:createWithSystemFont(subTpData.txt, subTpData.face, fontSize)
+
+	label:setAlignment(alignment, cc.VERTICAL_TEXT_ALIGNMENT_TOP)
+	label:setDimensions(subTpData.width, subTpData.height)
     label:setAnchorPoint(cc.p(0,1.0))
-    printInfo(tonumber(subTpData.g, 10))
     label:setTextColor(cc.c4b(tonumber(subTpData.r, 10), 
     	tonumber(subTpData.g, 10), 
     	tonumber(subTpData.b, 10), 
     	255))
-	label:setCascadeOpacityEnabled(true)
 	return label;
 end
 
@@ -85,7 +91,6 @@ end
 function _M.createFSprite(itemData, doc, subTpData)
 	local FSprite = import(".items.FSprite", PATH)
 	local ret = FSprite:create(itemData, doc, subTpData);
-	ret:setCascadeOpacityEnabled(true)
 	return ret
 end
 
@@ -132,6 +137,9 @@ function _M.interpolatioAttr(attr1, attr2, percentage)
 	_M.interpolatioByKey("scaleX", attr1, attr2, 1, percentage, ret)
 	_M.interpolatioByKey("scaleY", attr1, attr2, 1, percentage, ret)
 	_M.interpolatioByKey("alpha", attr1, attr2, 255, percentage, ret)
+	_M.interpolatioByKey("rp", attr1, attr2, 100, percentage, ret)
+	_M.interpolatioByKey("gp", attr1, attr2, 100, percentage, ret)
+	_M.interpolatioByKey("bp", attr1, attr2, 100, percentage, ret)
 
 	return ret;
 end
@@ -157,6 +165,17 @@ function _M.setNodeAttrByData(node, attr)
 
 	local alpha = attr.alpha or 255
 	node:setOpacity(math.floor(alpha))
+
+	local rp = attr.rp or 100
+	local gp = attr.gp or 100
+	local bp = attr.bp or 100
+	if rp+gp+bp < 300 then
+		rp = math.floor(rp*2.55)
+		gp = math.floor(gp*2.55)
+		bp = math.floor(bp*2.55)
+		-- printInfo("rp:" .. rp .. " gp:" .. gp .. " bp:" .. bp)
+		node:setColor(cc.c3b(rp,gp,bp))
+	end
 end
 
 function _M.getElementCacheKey(name, tp, eIndex, fIndex)
@@ -169,6 +188,18 @@ function _M.kindOfClass(obj, className)
 		return true
 	end
 	return false
+end
+
+function _M.createClippingNode()
+	local clip = cc.ClippingNode:create()  
+	clip:setAlphaThreshold(0)  
+	local node = cc.Sprite:create()
+	clip:setStencil(node)
+	return clip, node;
+end
+
+function _M.getLayerOrder(layerCount, layerIndex)
+	return (layerCount-layerIndex+1)*100
 end
 
 return _M;

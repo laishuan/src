@@ -4,11 +4,12 @@ local FlashConfig = import("..config")
 
 local Frame = class("Frame");
 
-function Frame:ctor(data, index, layer)
+function Frame:ctor(data, index, layer, parentNode)
 	self.layer = layer;
 	self.mc = layer.mc;
 	self.index = index;
 	self.name = data.name
+	self.parentNode = layer.parentNode;
 
 	self.startFrame = data.startFrame;
 	self.duration = data.duration
@@ -119,7 +120,13 @@ function Frame:createOneElementByData(elementData, index)
 	local attr = elementData.attr;
 	local childAttr = elementData.childAttr;
 	local layerOrder = self.layer.order;
-	local elementOrder = layerOrder + index;
+	local elementOrder
+	if self.parentNode then
+		elementOrder = index;
+	else
+		elementOrder = layerOrder + index;
+	end
+	local parentNode = self.parentNode or self.mc
 	local doc = self.mc.doc
 	local itemName = childAttr.itemName
 	local tp = childAttr.tp;
@@ -137,7 +144,7 @@ function Frame:createOneElementByData(elementData, index)
 	local isEnter = false
 	if ins then
 		if not cacheData.enter then
-			ins:addTo(self.mc, elementOrder, childAttr.name)
+			ins:addTo(parentNode, elementOrder, childAttr.name)
 			cacheData.enter = true;
 			isEnter = true
 		end
@@ -149,11 +156,11 @@ function Frame:createOneElementByData(elementData, index)
 		if childAttr.x == 0 and childAttr.y == 0 then
 			ins = doc:createInstance(childAttr.itemName, tpData)
 			ins:retain()
-			ins:addTo(self.mc, elementOrder, childAttr.name)
+			ins:addTo(parentNode, elementOrder, childAttr.name)
 		else
-			ins = FlashUtil.createNode();
+			ins = doc:createInstance(FlashConfig.defaultNodeName, tpData);
 			ins:retain();
-			ins:addTo(self.mc, elementOrder)
+			ins:addTo(parentNode, elementOrder)
 			child = doc:createInstance(childAttr.itemName, tpData)
 			child:addTo(ins, 1, childAttr.name):move(childAttr.x, childAttr.y)
 			cacheData.child = child

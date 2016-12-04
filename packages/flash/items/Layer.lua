@@ -6,11 +6,11 @@ local Frame = import(".Frame");
 
 local Layer = class("Layer");
 
-function Layer:ctor(data, index, timeline)
+function Layer:ctor(data, index, timeline, parentNode)
 	self.timeline = timeline;
 	self.mc = timeline.mc;
-
-	self.order = (timeline.layerCount-index+1)*100
+	self.parentNode = parentNode
+	self.order = FlashUtil.getLayerOrder(timeline.layerCount, index)
 	self.layerType = data.layerType;
 	self.visible = data.visible
 	self.frameCount = data.frameCount;

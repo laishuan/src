@@ -4,9 +4,10 @@ local FNode = import('.FNode')
 
 local Mc = class("Mc", FNode)
 
-function Mc:ctor(data, doc, group)
+function Mc:ctor(data, doc, subTpData)
 	self.doc = doc;
 	self.name = data.name;
+	local group = subTpData.group
 	assert(group, "Mc-ctor: group must not be null, name:" .. self.name)
 	self.group = group
 	self.frameRate = doc.fileInfo.frameRate

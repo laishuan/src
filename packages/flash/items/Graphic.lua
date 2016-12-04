@@ -43,4 +43,8 @@ function Graphic:removeSelfAndClean( ... )
 	self.timeline:cleanup()
 end
 
+function Graphic:getChildByName(insName)
+	return self.timeline:getChildByName(insName)
+end
+
 return Graphic;
