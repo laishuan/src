@@ -65,6 +65,7 @@ function _M.createText(itemData, doc, subTpData)
 		ttfConfig.fontFilePath = "fonts/STXINGKA.ttf";
 	end
     ttfConfig.glyphs=cc.GLYPHCOLLECTION_DYNAMIC
+    ttfConfig.customGlyphs = nil
 	ttfConfig.distanceFieldEnabled = true
 	label = cc.Label:create()
 	label:setTTFConfig(ttfConfig)
