@@ -38,14 +38,18 @@ function Frame:enter(frame, det)
 	local detFrame = frame - (self.startFrame + 1)
 	if #self.elements == 0 then
 		for index,elementData in ipairs(self.elementsData) do
+			local childAttr = elementData.childAttr
 			local ins, child, isEnter = self:createOneElementByData(elementData, index);
 			local data = {}
 			data.ins = ins;
 			data.child = child;
 			self.elements[#self.elements+1] = data;
-			local realElement = data.child or ins
+			local realElement = child or ins
 			if isEnter and FlashUtil.kindOfClass(realElement, FlashConfig.itemTypes.Anm) then
 				realElement:updateFrame(detFrame, det)
+			end
+			if childAttr.tp == FlashConfig.itemTypes.Txt then
+				FlashUtil.setTextAttr(realElement, childAttr)
 			end
 		end
 	end

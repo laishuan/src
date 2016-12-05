@@ -41,47 +41,50 @@ function _M.createNode(itemData, doc, subTpData)
 end
 
 function _M.createText(itemData, doc, subTpData)
-	local label;
+	-- local label;
 
-    local alignment;
-    if subTpData.alignment == "left"
-    	or subTpData.alignment == "justify" then
-    	alignment = cc.TEXT_ALIGNMENT_LEFT;
-	elseif subTpData.alignment == "center" then
-		alignment = cc.TEXT_ALIGNMENT_CENTER
-	elseif subTpData.alignment == "right" then
-		alignment = cc.TEXT_ALIGNMENT_RIGHT
-    end
-    local fontSize = subTpData.size
-    local fontType = subTpData.face;
+ --    local alignment;
+ --    if subTpData.alignment == "left"
+ --    	or subTpData.alignment == "justify" then
+ --    	alignment = cc.TEXT_ALIGNMENT_LEFT;
+	-- elseif subTpData.alignment == "center" then
+	-- 	alignment = cc.TEXT_ALIGNMENT_CENTER
+	-- elseif subTpData.alignment == "right" then
+	-- 	alignment = cc.TEXT_ALIGNMENT_RIGHT
+ --    end
+ --    local fontSize = subTpData.size
+ --    local fontType = subTpData.face;
 
-	local ttfConfig = {};
-    ttfConfig.fontSize = subTpData.size
-	local ttfPath = "fonts/" .. subTpData.face .. ".ttf";
-	local fullPath = cc.FileUtils:getInstance():fullPathForFilename(ttfPath);
-	if io.exists(fullPath) then
-	    ttfConfig.fontFilePath = ttfPath
-	else
-		ttfConfig.fontFilePath = "fonts/STXINGKA.ttf";
-	end
-    ttfConfig.glyphs=cc.GLYPHCOLLECTION_DYNAMIC
-    ttfConfig.customGlyphs = nil
-	ttfConfig.distanceFieldEnabled = true
-	label = cc.Label:create()
-	label:setTTFConfig(ttfConfig)
-	label:setString(subTpData.txt)
-	-- label:setString("你好")
+	-- local ttfConfig = {};
+ --    ttfConfig.fontSize = subTpData.size
+	-- local ttfPath = "fonts/" .. subTpData.face .. ".ttf";
+	-- local fullPath = cc.FileUtils:getInstance():fullPathForFilename(ttfPath);
+	-- if io.exists(fullPath) then
+	--     ttfConfig.fontFilePath = ttfPath
+	-- else
+	-- 	ttfConfig.fontFilePath = "fonts/" .. FlashConfig.defaultFnt;
+	-- end
+ --    ttfConfig.glyphs=cc.GLYPHCOLLECTION_DYNAMIC
+ --    ttfConfig.customGlyphs = nil
+	-- ttfConfig.distanceFieldEnabled = true
+	-- label = cc.Label:create()
+	-- label:setTTFConfig(ttfConfig)
+	-- label:setString(subTpData.txt)
+	-- -- label:setString("你好")
 
-	-- label =  cc.Label:createWithSystemFont(subTpData.txt, subTpData.face, fontSize)
+	-- -- label =  cc.Label:createWithSystemFont(subTpData.txt, subTpData.face, fontSize)
 
-	label:setAlignment(alignment, cc.VERTICAL_TEXT_ALIGNMENT_TOP)
-	label:setDimensions(subTpData.width, subTpData.height)
-    label:setAnchorPoint(cc.p(0,1.0))
-    label:setTextColor(cc.c4b(tonumber(subTpData.r, 10), 
-    	tonumber(subTpData.g, 10), 
-    	tonumber(subTpData.b, 10), 
-    	255))
-	return label;
+	-- label:setAlignment(alignment, cc.VERTICAL_TEXT_ALIGNMENT_TOP)
+	-- label:setDimensions(subTpData.width, subTpData.height)
+ --    label:setAnchorPoint(cc.p(0,1.0))
+ --    label:setTextColor(cc.c4b(tonumber(subTpData.r, 10), 
+ --    	tonumber(subTpData.g, 10), 
+ --    	tonumber(subTpData.b, 10), 
+ --    	255))
+	-- return label;
+
+	local label = cc.Label:create()
+	return label
 end
 
 function _M.createLink(itemData, doc, subTpData)
@@ -177,6 +180,46 @@ function _M.setNodeAttrByData(node, attr)
 		-- printInfo("rp:" .. rp .. " gp:" .. gp .. " bp:" .. bp)
 		node:setColor(cc.c3b(rp,gp,bp))
 	end
+end
+
+function _M.setTextAttr(label, subTpData)
+    local alignment;
+    if subTpData.alignment == "left"
+    	or subTpData.alignment == "justify" then
+    	alignment = cc.TEXT_ALIGNMENT_LEFT;
+	elseif subTpData.alignment == "center" then
+		alignment = cc.TEXT_ALIGNMENT_CENTER
+	elseif subTpData.alignment == "right" then
+		alignment = cc.TEXT_ALIGNMENT_RIGHT
+    end
+    local fontSize = subTpData.size
+    local fontType = subTpData.face;
+
+	local ttfConfig = {};
+    ttfConfig.fontSize = subTpData.size
+	local ttfPath = "fonts/" .. subTpData.face .. ".ttf";
+	local fullPath = cc.FileUtils:getInstance():fullPathForFilename(ttfPath);
+	if io.exists(fullPath) then
+	    ttfConfig.fontFilePath = ttfPath
+	else
+		ttfConfig.fontFilePath = "fonts/" .. FlashConfig.defaultFnt;
+	end
+    ttfConfig.glyphs=cc.GLYPHCOLLECTION_DYNAMIC
+    ttfConfig.customGlyphs = nil
+	ttfConfig.distanceFieldEnabled = true
+	label:setTTFConfig(ttfConfig)
+	label:setString(subTpData.txt)
+	-- label:setString("你好")
+
+	-- label =  cc.Label:createWithSystemFont(subTpData.txt, subTpData.face, fontSize)
+
+	label:setAlignment(alignment, cc.VERTICAL_TEXT_ALIGNMENT_TOP)
+	label:setDimensions(subTpData.width, subTpData.height)
+    label:setAnchorPoint(cc.p(0,1.0))
+    label:setTextColor(cc.c4b(tonumber(subTpData.r, 10), 
+    	tonumber(subTpData.g, 10), 
+    	tonumber(subTpData.b, 10), 
+    	255))
 end
 
 function _M.getElementCacheKey(name, tp, eIndex, fIndex)

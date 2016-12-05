@@ -20,5 +20,5 @@ _M.AnmSubTp = {
 
 _M.defaultNodeName = "__DefaultNode";
 _M.defaultTxtName = "__Text";
-
+_M.defaultFnt = "STXIHEI.ttf"
 return _M;
