@@ -131,13 +131,63 @@ function _M.interpolatioByKeySkew (key, attr1, attr2, default, percentage, ret)
 	ret[key] = newV;
 end
 
-function _M.interpolatioAttr(attr1, attr2, percentage)
+function _M.interpolatioByKeySkewCW (key, attr1, attr2, default, percentage, ret, totalAngle)
+	local value1 = attr1[key] or default;
+	local value2 = attr2[key] or default;
+	local newV
+
+	if value1 == value2 then
+		newV = value1;
+	else
+		local sub = value2-value1;
+		if sub < 0 then
+			sub = sub + 360
+		end
+		newV = value1 + sub*percentage + totalAngle*percentage;
+		if newV > 360 then
+			newV = newV % 360
+		end
+
+	end 
+	ret[key] = newV;
+end
+
+function _M.interpolatioByKeySkewCCW (key, attr1, attr2, default, percentage, ret, totalAngle)
+	local value1 = attr1[key] or default;
+	local value2 = attr2[key] or default;
+	local newV
+
+	if value1 == value2 then
+		newV = value1;
+	else
+		local sub = value2-value1;
+		if sub > 0 then
+			sub = sub - 360
+		end
+		newV = value1 + sub*percentage + totalAngle*percentage;
+		if newV < -360 then
+			newV = newV % 360
+		end
+
+	end 
+	ret[key] = newV;
+end
+
+function _M.interpolatioAttr(attr1, attr2, percentage, totalAngle)
 	local ret = {};
 
 	_M.interpolatioByKey("x", attr1, attr2, 0, percentage, ret)
 	_M.interpolatioByKey("y", attr1, attr2, 0, percentage, ret)
-	_M.interpolatioByKeySkew("skewX", attr1, attr2, 0, percentage, ret)
-	_M.interpolatioByKeySkew("skewY", attr1, attr2, 0, percentage, ret)
+	if not totalAngle then
+		_M.interpolatioByKeySkew("skewX", attr1, attr2, 0, percentage, ret)
+		_M.interpolatioByKeySkew("skewY", attr1, attr2, 0, percentage, ret)
+	elseif totalAngle > 0 then
+		_M.interpolatioByKeySkewCW("skewX", attr1, attr2, 0, percentage, ret, totalAngle)
+		_M.interpolatioByKeySkewCW("skewY", attr1, attr2, 0, percentage, ret, totalAngle)
+	elseif totalAngle < 0 then
+		_M.interpolatioByKeySkewCCW("skewX", attr1, attr2, 0, percentage, ret, totalAngle)
+		_M.interpolatioByKeySkewCCW("skewY", attr1, attr2, 0, percentage, ret, totalAngle)
+	end
 	_M.interpolatioByKey("scaleX", attr1, attr2, 1, percentage, ret)
 	_M.interpolatioByKey("scaleY", attr1, attr2, 1, percentage, ret)
 	_M.interpolatioByKey("alpha", attr1, attr2, 255, percentage, ret)

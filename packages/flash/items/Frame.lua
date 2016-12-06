@@ -10,7 +10,8 @@ function Frame:ctor(data, index, layer, parentNode)
 	self.index = index;
 	self.name = data.name
 	self.parentNode = layer.parentNode;
-
+	self.rotateType = data.rotateType
+	self.rotateTimes = data.rotateTimes
 	self.startFrame = data.startFrame;
 	self.duration = data.duration
 	self.tweenType = data.tweenType;
@@ -29,6 +30,15 @@ function Frame:setNextAttrByFrameData(frameData)
 	if elementData then
 		self.nextAttr = frameData.elements[1].attr;
 	end 
+	local rotateType = self.rotateType
+	local rotateTimes = self.rotateTimes
+	if rotateType then
+		if rotateType == "clockwise" then
+			self.totalAngle = 360*rotateTimes
+		elseif rotateType == "counter-clockwise" then
+			self.totalAngle = -360*rotateTimes
+		end
+	end
 end
 
 function Frame:enter(frame, det)
@@ -75,7 +85,7 @@ function Frame:getAttrByFrame(elementData, detFrame)
 		return elementData.attr;
 	end
 
-	return FlashUtil.interpolatioAttr(elementData.attr, self.nextAttr, detFrame/self.duration)
+	return FlashUtil.interpolatioAttr(elementData.attr, self.nextAttr, detFrame/self.duration, self.totalAngle)
 end
 
 function Frame:exit(newFrame)
