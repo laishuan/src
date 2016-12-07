@@ -12,6 +12,8 @@ function Timeline:ctor(data, mc)
 	self.layers = {};
 	self.insNameCache = {}
 	self.clipNodes ={};
+	self.allFrameCallBack = {}
+	self.lastFrame = 0
 	local layersData = data.layers;
 	for i=1,self.layerCount do
 		local layerData = layersData[i]
@@ -26,12 +28,24 @@ function Timeline:ctor(data, mc)
 			layer = Layer:create(layerData, i, self, stencil)
 		elseif layerData.layerType == "masked" then
 			layer = Layer:create(layerData, i, self, self.curClipNode)
-		else
+		elseif layerData.layerType == "normal" then
 			self.curClipNode = nil;
 			layer = Layer:create(layerData, i, self)
 		end
 		self.layers[#self.layers+1] = layer;
 	end
+end
+
+function Timeline:setFrameCallBack(frame, func)
+	self.allFrameCallBack[frame] = func
+end
+
+function Timeline:setEndCallBack(func)
+	self.allFrameCallBack[self.frameCount] = func
+end
+
+function Timeline:setEachFrameCallBack(func)
+	self.eachFrameCallBack = func
 end
 
 function Timeline:addInsNameData(insName, cacheData, childAttr)
@@ -56,6 +70,7 @@ function Timeline:addInsNameData(insName, cacheData, childAttr)
 	cacheData.ins = ins;
 end
 
+
 function Timeline:getChildByName(insName)
 	local cacheData = self.insNameCache[insName]
 	if cacheData then
@@ -77,7 +92,17 @@ function Timeline:updateFrame(frame, det)
 		local layer = self.layers[i];
 		layer:updateFrame(newFrame, det)
 	end
+	if self.eachFrameCallBack then
+		self.eachFrameCallBack(newFrame)
+	end
+	for i=self.lastFrame+1,newFrame do
+		local curFrameCallBack = self.allFrameCallBack[i]
+		if curFrameCallBack then
+			curFrameCallBack(newFrame)
+		end
+	end
 
+	self.lastFrame = newFrame
 end
 
 function Timeline:cleanup()

@@ -23,6 +23,7 @@ function Mc:ctor(data, doc, subTpData)
 
 	self.isPlaying = true;
 	self.total = 0;
+	self.timeline:updateFrame(0, 0)
 end
 
 
@@ -60,15 +61,30 @@ function Mc:stop()
 end
 
 function Mc:gotoAndPlay(frame)
+	self.timeline.lastFrame = frame-1;
 	self:resetTotal();
-	self:updateFrame(frame, 0);
+	self:updateFrame(frame-1, 0);
 	self:play()
 end
 
 function Mc:gotoAndStop(frame)
+
+	self.timeline.lastFrame = frame-1;
 	self:resetTotal();
-	self:updateFrame(frame, 0);
+	self:updateFrame(frame-1, 0);
 	self:stop();
+end
+
+function Mc:setFrameCallBack(frame, func)
+	self.timeline:setFrameCallBack(frame, func)
+end
+
+function Mc:setEndCallBack(func)
+	self.timeline:setEndCallBack(func)
+end
+
+function Mc:setEachFrameCallBack(func)
+	self.timeline:setEachFrameCallBack(func)
 end
 
 function Mc:getChildByName(insName)
@@ -108,6 +124,7 @@ function Mc:update(dt)
 	if curFrame >= frameCount then
 		self.total = self.total - self.oneLoopTime
 		curFrame =  math.floor(self.total/self.perFrameTime);
+		self.timeline.lastFrame = 0;
 	end
 
 	if det < 0.01 then
