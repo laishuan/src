@@ -18,11 +18,30 @@ function Frame:ctor(data, index, layer, parentNode)
 	self.isMotionFrame = (self.tweenType == "motion")
 	self.isEmpty = data.isEmpty;
 	self.elementsData = data.elements;
+
+	self.soundName = data.soundName;
+	self.soundLoopMode = data.soundLoopMode
+	self.soundSync = data.soundSync
+	self.soundLoop =data.soundLoop
+
 	self.elements = {};
 end
 
 function Frame:isMotion()
 	return self.isMotionFrame
+end
+
+function Frame:dealSound()
+	if self.soundName then
+		local doc = self.mc.doc
+		local tpData = {};
+		tpData.soundLoopMode = self.soundLoopMode;
+		tpData.soundSync = self.soundSync;
+		tpData.soundLoop = self.soundLoop;
+		tpData.group = self.mc.group
+		
+		doc:createInstance(self.soundName, tpData)
+	end
 end
 
 function Frame:setNextAttrByFrameData(frameData)
@@ -42,6 +61,10 @@ function Frame:setNextAttrByFrameData(frameData)
 end
 
 function Frame:enter(frame, det)
+	if self.soundName and not self.hadDealSound then
+		self:dealSound()
+		self.hadDealSound = true
+	end
 	if self.isEmpty then
 		return;
 	end
@@ -128,6 +151,7 @@ function Frame:exit(newFrame)
 
 	end
 	self.elements = {}
+	self.hadDealSound = false
 end
 
 function Frame:createOneElementByData(elementData, index)

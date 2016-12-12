@@ -16,11 +16,16 @@ function _M.getPlistPath (fileName)
 	return FlashConfig.path .. "/" .. fileName .. "/" .. fileName .."image.plist";
 end
 
+function _M.getMusicPath(musicName)
+	return FlashConfig.path .. "/" .. musicName;
+end
+
 function _M.createImage(itemData, doc)
 	local sprite = cc.Sprite:createWithSpriteFrameName(itemData.path);
 	sprite:setAnchorPoint(cc.p(0, 1));
 	return sprite;
 end
+
 
 function _M.createAnim(itemData, doc, subTpData)
 	local ret
@@ -32,6 +37,34 @@ function _M.createAnim(itemData, doc, subTpData)
 		ret = Mc:create(itemData, doc, subTpData);
 	end
 	return ret
+end
+
+local currentMusicPath
+function _M.createMusic(itemData, doc, subTpData)
+	local musicPath = _M.getMusicPath(itemData.path);
+	local isLoop = (subTpData.soundLoopMode == "loop")
+	if subTpData.soundSync == "start" then
+		if AudioEngine.isMusicPlaying() and currentMusicPath ~= musicPath then
+			AudioEngine.stopMusic(true)
+			AudioEngine.playMusic(musicPath, isLoop)
+			currentMusicPath = musicPath
+		end
+	end
+
+	if subTpData.soundSync == "stop" then
+		if currentMusicPath == musicPath then
+			if AudioEngine.isMusicPlaying() then
+				AudioEngine.stopMusic(true)
+				currentMusicPath = nil
+			end
+		end
+		doc:stopAllEffectByName(musicPath);
+	end
+
+	if subTpData.soundSync == "event" then
+		local soundID = AudioEngine.playEffect(musicPath, isLoop);
+		doc:addSoundIDByName(musicPath, soundID);
+	end
 end
 
 function _M.createNode(itemData, doc, subTpData)
