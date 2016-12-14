@@ -12,6 +12,10 @@ function _M.getLuaPath (fileName)
 	return FlashConfig.path .. "." .. fileName .. "." .. fileName;
 end
 
+function _M.getSpliteLuaPath(fileName, itemName)
+	return FlashConfig.path .. "." .. fileName .. "." .. itemName;
+end
+
 function _M.getPlistPath (fileName)
 	return FlashConfig.path .. "/" .. fileName .. "/" .. fileName .."image.plist";
 end
@@ -327,6 +331,16 @@ end
 
 function _M.getLayerOrder(layerCount, layerIndex)
 	return (layerCount-layerIndex+1)*100
+end
+
+local director = cc.Director:getInstance()
+local view = director:getOpenGLView()
+local framesize = director:getWinSize()
+local w, h = framesize.width, framesize.height
+local offsetH = h - CC_DESIGN_RESOLUTION.height;
+
+function _M.getOffsetByAlign(align)
+	return offsetH*align
 end
 
 return _M;

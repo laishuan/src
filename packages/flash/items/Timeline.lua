@@ -15,13 +15,14 @@ function Timeline:ctor(data, mc)
 	self.allFrameCallBack = {}
 	self.lastFrame = 0
 	local layersData = data.layers;
+
 	for i=1,self.layerCount do
 		local layerData = layersData[i]
 		local layer;
+		local order = FlashUtil.getLayerOrder(self.layerCount, i);
 		if layerData.layerType == "mask" then
 			local clipNode, stencil = FlashUtil.createClippingNode()
 			clipNode:retain();
-			local order = FlashUtil.getLayerOrder(self.layerCount, i);
 			clipNode:addTo(self.mc, order);
 			self.clipNodes[#self.clipNodes+1] = clipNode
 			self.curClipNode = clipNode;
@@ -29,8 +30,15 @@ function Timeline:ctor(data, mc)
 		elseif layerData.layerType == "masked" then
 			layer = Layer:create(layerData, i, self, self.curClipNode)
 		elseif layerData.layerType == "normal" then
+			local layerNode
+			local align = layerData.align
+			if align then
+				layerNode = mc.doc:createInstance(FlashConfig.defaultNodeName)
+				local offsetY = FlashUtil.getOffsetByAlign(align)
+				layerNode:addTo(self.mc, order):move(0, offsetY);
+			end
 			self.curClipNode = nil;
-			layer = Layer:create(layerData, i, self)
+			layer = Layer:create(layerData, i, self, layerNode)
 		end
 		self.layers[#self.layers+1] = layer;
 	end

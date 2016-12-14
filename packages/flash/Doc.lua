@@ -36,6 +36,10 @@ function Doc:createInstance(itemName, data)
 		itemData = self.scene;
 	else
 		itemData = self.library[itemName];
+		if type(itemData) == "string" then
+			local luaPath = FlashUtil.getSpliteLuaPath(self.fileName, itemData)
+			itemData = require(luaPath);
+		end
 	end
 	assert(itemData, "Doc:createInsByData, itemData is nil name:" .. itemName)
 	return self:createInsByData(itemData, data);
