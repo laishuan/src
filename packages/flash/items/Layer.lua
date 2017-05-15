@@ -66,6 +66,7 @@ function Layer:cacheOneElement(elementData, eIndex, frame)
 	else
 		cacheData = {};
 	end
+	cacheData.name = name
 	self.elementsCache[cacheKey] = cacheData
 	local insName = childAttr.insName
 	if not insName then
@@ -97,6 +98,27 @@ function Layer:createKeyFrameByData(index, framesData)
 	end
 
 	return keyFrame;
+end
+
+function Layer:updateBlendMode(blendMode)
+	for _,cacheData in pairs(self.elementsCache) do
+		local realNode = cacheData.child or cacheData.ins
+		local blendMode  = self.mc.pblendMode or self.mc.blendMode
+		if realNode  then
+			if realNode.setPBlendMode then
+				realNode:setPBlendMode(blendMode)
+			end
+
+			if cacheData.tp == FlashConfig.itemTypes.Img then
+				-- print("set " .. cacheData.name .. " blendMode to:" .. tostring(blendMode))
+				if blendMode == "add" then
+					realNode:setBlendFunc(cc.blendFunc(gl.SRC_ALPHA, gl.ONE))
+				else
+					realNode:setBlendFunc(cc.blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA))
+				end
+			end
+		end
+	end
 end
 
 function Layer:updateFrame(frame, det)

@@ -21,4 +21,6 @@ _M.AnmSubTp = {
 _M.defaultNodeName = "__DefaultNode";
 _M.defaultTxtName = "__Text";
 _M.defaultFnt = "STXIHEI.ttf"
+_M.showTextFrame = true
+_M.TextFrameTag = 33567;
 return _M;

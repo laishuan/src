@@ -49,6 +49,17 @@ function Frame:setNextAttrByFrameData(frameData)
 	if elementData then
 		self.nextAttr = frameData.elements[1].attr;
 	end 
+	local curElementDataNum = #self.elementsData
+	local nextElementNum = #frameData.elements
+	local min = math.min(curElementDataNum, nextElementNum)
+	for i=1,min do
+		local curChildAttr = self.elementsData[i].childAttr
+		local nextChildAttr = frameData.elements[i].childAttr
+		if curChildAttr.blendMode ~= nextChildAttr.blendMode then
+			nextChildAttr.needBlen = true
+		end
+
+	end
 	local rotateType = self.rotateType
 	local rotateTimes = self.rotateTimes
 	if rotateType then
@@ -92,10 +103,14 @@ function Frame:enter(frame, det)
 		local ins = data.ins
 		local attr = self:getAttrByFrame(elementData, detFrame+det);
 		local realElement = data.child or ins
+		local blendMode = elementData.childAttr.blendMode
+		if realElement.setBlendMode then
+			realElement:setBlendMode(blendMode)
+		end
+		FlashUtil.setNodeAttrByData(ins, attr);
 		if FlashUtil.kindOfClass(realElement, FlashConfig.AnmSubTp.Gra) then
 			realElement:updateFrame(detFrame, det)
 		end
-		FlashUtil.setNodeAttrByData(ins, attr);
 	end
 end
 
@@ -171,6 +186,8 @@ function Frame:createOneElementByData(elementData, index)
 
 	local tpData = childAttr
 	tpData.group = self.mc.group
+	tpData.pblendMode = self.mc.pblendMode or self.mc.blendMode
+	-- print("blendMode:" .. tostring(tpData.blendMode) .. " name:" .. childAttr.itemName)
 	assert(tpData.group, "Frame:createOneElementByData - must had group, name:" .. self.mc.name)
 	if childAttr.loop and childAttr.firstFrame then
 		tp = FlashConfig.AnmSubTp.Gra
@@ -179,15 +196,22 @@ function Frame:createOneElementByData(elementData, index)
 	local cacheData = self.layer:getElementCacheData(cackeKey)
 	local ins = cacheData.ins;
 	local child = cacheData.child;
+	local realNode = child or ins
 	local isEnter = false
 	if ins then
 		if not cacheData.enter then
+			if realNode.setBlendMode and childAttr.needBlen then
+				realNode:setBlendMode(tpData.blendMode)
+			end
 			ins:addTo(parentNode, elementOrder, childAttr.name)
 			cacheData.enter = true;
 			isEnter = true
 		end
 		if child then
 			child:move(childAttr.x, childAttr.y)
+			if FlashUtil.kindOfClass(child, FlashConfig.AnmSubTp.Gra) then
+				child:refreshAttr(childAttr)
+			end
 		end
 	else
 		isEnter = true
@@ -204,6 +228,7 @@ function Frame:createOneElementByData(elementData, index)
 			cacheData.child = child
 		end
 		cacheData.ins = ins;
+		cacheData.tp = tp
 		cacheData.enter = true
 	end
 	return ins, child, isEnter;

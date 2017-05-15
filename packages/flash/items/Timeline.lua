@@ -113,6 +113,12 @@ function Timeline:updateFrame(frame, det)
 	self.lastFrame = newFrame
 end
 
+function Timeline:updateBlendMode()
+	for _,layer in ipairs(self.layers) do
+		layer:updateBlendMode()
+	end
+end
+
 function Timeline:cleanup()
 	for i=1,self.layerCount do
 		local layer = self.layers[i];

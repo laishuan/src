@@ -10,6 +10,8 @@ function Mc:ctor(data, doc, subTpData)
 	local group = subTpData.group
 	assert(group, "Mc-ctor: group must not be null, name:" .. self.name)
 	self.group = group
+	self.blendMode = subTpData.blendMode
+	self.pblendMode = subTpData.pblendMode
 	self.frameRate = doc.fileInfo.frameRate
 	self.perFrameTime = 1000/self.frameRate;
 	self.timeline = Timeline:create(data.timeline, self);
@@ -33,6 +35,20 @@ function Mc:onEnter()
 	self.isEnter = true;
 	if self.isPlaying then
 		self.group:addMc(self)
+	end
+end
+
+function Mc:setBlendMode(blendMode)
+	if blendMode ~= self.blendMode then
+		self.blendMode = blendMode
+		self.timeline:updateBlendMode()
+	end
+end
+
+function Mc:setPBlendMode(blendMode)
+	if blendMode ~= self.pblendMode then
+		self.pblendMode = blendMode
+		self.timeline:updateBlendMode()
 	end
 end
 

@@ -12,8 +12,15 @@ function Graphic:ctor(data, doc, subTpData)
 	self.loop = subTpData.loop;
 	self.firstFrame = subTpData.firstFrame
 	self.group = subTpData.group
+	self.blendMode = subTpData.blendMode
+	self.pblendMode = subTpData.pblendMode
 	self.timeline = Timeline:create(data.timeline, self);
 	self.frameCount = self.timeline.frameCount;
+end
+
+function Graphic:refreshAttr(data)
+	self.loop = data.loop;
+	self.firstFrame = data.firstFrame
 end
 
 function Graphic:updateFrame(frame, det)
@@ -45,6 +52,20 @@ end
 
 function Graphic:getChildByName(insName)
 	return self.timeline:getChildByName(insName)
+end
+
+function Graphic:setBlendMode(blendMode)
+	if blendMode ~= self.blendMode then
+		self.blendMode = blendMode
+		self.timeline:updateBlendMode()
+	end
+end
+
+function Graphic:setPBlendMode(blendMode)
+	if blendMode ~= self.pblendMode then
+		self.pblendMode = blendMode
+		self.timeline:updateBlendMode()
+	end
 end
 
 return Graphic;

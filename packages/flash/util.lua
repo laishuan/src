@@ -24,9 +24,12 @@ function _M.getMusicPath(musicName)
 	return FlashConfig.path .. "/" .. musicName;
 end
 
-function _M.createImage(itemData, doc)
+function _M.createImage(itemData, doc, subTpData)
 	local sprite = cc.Sprite:createWithSpriteFrameName(itemData.path);
 	sprite:setAnchorPoint(cc.p(0, 1));
+	if subTpData.blendMode == "add" or subTpData.pblendMode == "add" then
+		sprite:setBlendFunc(cc.blendFunc(gl.SRC_ALPHA, gl.ONE))
+	end
 	return sprite;
 end
 
@@ -121,6 +124,7 @@ function _M.createText(itemData, doc, subTpData)
 	-- return label;
 
 	local label = cc.Label:create()
+	label:setAnchorPoint(cc.p(0,1))
 	return label
 end
 
@@ -250,10 +254,6 @@ function _M.setNodeAttrByData(node, attr)
 	local scaleY = attr.scaleY or 1;
 	node:setScaleY(scaleY);
 
-	if attr.blendMode == "add" then
-		node:setBlendFunc(cc.blendFunc(gl.SRC_ALPHA, gl.ONE))
-	end
-
 	local alpha = attr.alpha or 255
 	node:setOpacity(math.floor(alpha))
 
@@ -283,7 +283,7 @@ function _M.setTextAttr(label, subTpData)
     local fontType = subTpData.face;
 
 	local ttfConfig = {};
-    ttfConfig.fontSize = subTpData.size
+    ttfConfig.fontSize = fontSize
 	local ttfPath = "fonts/" .. subTpData.face .. ".ttf";
 	local fullPath = cc.FileUtils:getInstance():fullPathForFilename(ttfPath);
 	if io.exists(fullPath) then
@@ -293,20 +293,31 @@ function _M.setTextAttr(label, subTpData)
 	end
     ttfConfig.glyphs=cc.GLYPHCOLLECTION_DYNAMIC
     ttfConfig.customGlyphs = nil
-	ttfConfig.distanceFieldEnabled = true
+	ttfConfig.distanceFieldEnabled = false
 	label:setTTFConfig(ttfConfig)
-	label:setString(subTpData.txt)
 	-- label:setString("你好")
 
 	-- label =  cc.Label:createWithSystemFont(subTpData.txt, subTpData.face, fontSize)
 
 	label:setAlignment(alignment, cc.VERTICAL_TEXT_ALIGNMENT_TOP)
 	label:setDimensions(subTpData.width, subTpData.height)
-    label:setAnchorPoint(cc.p(0,1.0))
+    -- label:setAnchorPoint(cc.p(0,0.5))
     label:setTextColor(cc.c4b(tonumber(subTpData.r, 10), 
     	tonumber(subTpData.g, 10), 
     	tonumber(subTpData.b, 10), 
     	255))
+	label:setString(subTpData.txt)
+    if FlashConfig.showTextFrame then
+		local fangkuai = label:getChildByTag(FlashConfig.TextFrameTag)
+		if not fangkuai then
+		    fangkuai = cc.Sprite:create("fangkuai.png")
+		    fangkuai:setAnchorPoint(cc.p(0,1.0))
+		    fangkuai:addTo(label, 1, FlashConfig.TextFrameTag):move(0, subTpData.height)
+	 	end
+	    fangkuai:setScaleX(subTpData.width/10)
+	    fangkuai:setScaleY(subTpData.height/10)
+	    fangkuai:setOpacity(60)
+	end
 end
 
 function _M.getElementCacheKey(name, tp, eIndex, fIndex)
