@@ -220,7 +220,7 @@ function Frame:createOneElementByData(elementData, index)
 			ins:retain()
 			ins:addTo(parentNode, elementOrder, childAttr.name)
 		else
-			ins = doc:createInstance(FlashConfig.defaultNodeName, tpData);
+			ins = doc:createInstance(FlashConfig.defaultNodeName, {});
 			ins:retain();
 			ins:addTo(parentNode, elementOrder)
 			child = doc:createInstance(childAttr.itemName, tpData)

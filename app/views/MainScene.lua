@@ -29,6 +29,7 @@ function MainScene:onCreate()
     -- local txt2 = waitAnim:getChildByName("woqu")
     -- -- txt1:setString("不去了啊！")
     -- -- txt2:setString("哈哈哈")
+    local waitAnim = Flash:createMC("testBtn")
     waitAnim:addTo(self):move(0, 0)
     -- waitAnim:setSpeed(0.2)
 

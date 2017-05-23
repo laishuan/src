@@ -21,6 +21,7 @@ function Flash:createMC(fileName, itemName, subTpData)
 	if not subTpData then
 		subTpData = {}
 		subTpData.group = McGroup:create()
+		subTpData.subTp = FlashConfig.AnmSubTp.Mov
 	end
 	return doc:createInstance(itemName, subTpData);
 end

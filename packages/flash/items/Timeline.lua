@@ -69,7 +69,7 @@ function Timeline:addInsNameData(insName, cacheData, childAttr)
 		ins = doc:createInstance(itemName, tpData)
 		ins:retain()
 	else
-		ins = doc:createInstance(FlashConfig.defaultNodeName, tpData);
+		ins = doc:createInstance(FlashConfig.defaultNodeName, {});
 		ins:retain();
 		child = doc:createInstance(itemName, tpData)
 		child:addTo(ins, 1, childAttr.name):move(childAttr.x, childAttr.y)

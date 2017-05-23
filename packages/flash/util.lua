@@ -36,10 +36,16 @@ end
 
 function _M.createAnim(itemData, doc, subTpData)
 	local ret
-	if subTpData.loop and subTpData.firstFrame then
+	if subTpData.subTp == FlashConfig.AnmSubTp.Gra then
 		local Cls = import(".items.Graphic", PATH);
 		ret = Cls:create(itemData, doc, subTpData)
-	else
+	elseif subTpData.subTp == FlashConfig.AnmSubTp.Btn then
+		local FBtn = import(".items.FBtn", PATH)
+		ret = FBtn:create(itemData, doc, subTpData)
+	elseif subTpData.subTp == FlashConfig.AnmSubTp.Spt then
+		local FSprite = import(".items.FSprite", PATH)
+		ret = FSprite:create(itemData, doc, subTpData);
+	elseif subTpData.subTp == FlashConfig.AnmSubTp.Mov then 
 		local Mc = import(".items.Mc", PATH)
 		ret = Mc:create(itemData, doc, subTpData);
 	end
@@ -77,6 +83,29 @@ end
 function _M.createNode(itemData, doc, subTpData)
 	local Fnode = import(".items.FNode", PATH)
 	local node = Fnode:create()
+	local bound = subTpData.touchBound
+	if bound then
+		local width = math.abs(bound.left - bound.right)
+		local height = math.abs(bound.bottom - bound.top)
+		local anchorX, anchorY
+		node.bound = cc.rect(bound.left, -bound.bottom, width, height)
+		anchorX = -bound.left/width
+		anchorY = bound.bottom/height
+		-- printInfo("anchorX:" .. anchorX .. " anchorY:" .. anchorY)
+		node:setAnchorPoint(cc.p(anchorX, anchorY))
+		-- node:setContentSize(cc.size(width, height))
+	    if FlashConfig.showBtnFrame then
+			local fangkuai = node:getChildByTag(FlashConfig.TextFrameTag)
+			if not fangkuai then
+			    fangkuai = cc.Sprite:create("fangkuai.png")
+			    fangkuai:setAnchorPoint(cc.p(anchorX,anchorY))
+			    fangkuai:addTo(node, 1, FlashConfig.TextFrameTag):move(0, 0)
+		 	end
+		    fangkuai:setScaleX(width/10)
+		    fangkuai:setScaleY(height/10)
+		    fangkuai:setOpacity(60)
+		end
+	end
 	return node;
 end
 
@@ -131,12 +160,6 @@ end
 function _M.createLink(itemData, doc, subTpData)
 	local flash = doc.flash;
 	return flash:createMC(itemData.flashName, itemData.itemName, subTpData);
-end
-
-function _M.createFSprite(itemData, doc, subTpData)
-	local FSprite = import(".items.FSprite", PATH)
-	local ret = FSprite:create(itemData, doc, subTpData);
-	return ret
 end
 
 function _M.interpolatioByKey (key, attr1, attr2, default, percentage, ret)
