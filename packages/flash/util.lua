@@ -82,7 +82,7 @@ end
 
 function _M.createNode(itemData, doc, subTpData)
 	local Fnode = import(".items.FNode", PATH)
-	local node = Fnode:create()
+	local node = Fnode:create(itemData, doc, subTpData)
 	local bound = subTpData.touchBound
 	if bound then
 		local width = math.abs(bound.left - bound.right)
@@ -323,7 +323,7 @@ function _M.setTextAttr(label, subTpData)
 	-- label =  cc.Label:createWithSystemFont(subTpData.txt, subTpData.face, fontSize)
 
 	label:setAlignment(alignment, cc.VERTICAL_TEXT_ALIGNMENT_TOP)
-	label:setDimensions(subTpData.width, subTpData.height)
+	-- label:setDimensions(subTpData.width, subTpData.height)
     -- label:setAnchorPoint(cc.p(0,0.5))
     label:setTextColor(cc.c4b(tonumber(subTpData.r, 10), 
     	tonumber(subTpData.g, 10), 

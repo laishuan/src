@@ -2,23 +2,15 @@
 local FlashConfig = import("..config")
 local FlashUtil = import("..util")
 
-local Timeline = import(".Timeline");
-local FNode = import('.FNode')
+local FSprite = import('.FSprite')
 
-local FBtn = class("FBtn", FNode)
+local FBtn = class("FBtn", FSprite)
 
 function FBtn:ctor(data, doc, subTpData)
-	self.doc = doc;
-	self.name = data.name;
+	FBtn.super.ctor(self, data, doc, subTpData)
 	data = self:transData(data, subTpData)
 	-- dump(data, "test_after_trans:" .. self.name, 15)
-	self.group = subTpData.group
-	self.blendMode = subTpData.blendMode
-	self.pblendMode = subTpData.pblendMode
-	self.timeline = Timeline:create(data.timeline, self);
-	self.frameCount = self.timeline.frameCount;
 	self:initTouch()
-	self.timeline:updateFrame(0, 0)
 end
 
 function FBtn:transData(data, subTpData)
@@ -136,29 +128,6 @@ function FBtn:findLayerFrameByIndex(layer, index)
 			frame.isEmpty = true
 			return ret
 		end
-	end
-end
-
-function FBtn:removeSelfAndClean( ... )
-	self:removeSelf()
-	self.timeline:cleanup()
-end
-
-function FBtn:getChildByName(insName)
-	return self.timeline:getChildByName(insName)
-end
-
-function FBtn:setBlendMode(blendMode)
-	if blendMode ~= self.blendMode then
-		self.blendMode = blendMode
-		self.timeline:updateBlendMode()
-	end
-end
-
-function FBtn:setPBlendMode(blendMode)
-	if blendMode ~= self.pblendMode then
-		self.pblendMode = blendMode
-		self.timeline:updateBlendMode()
 	end
 end
 

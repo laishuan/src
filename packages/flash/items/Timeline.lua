@@ -11,7 +11,6 @@ function Timeline:ctor(data, mc)
 	self.layerCount = data.layerCount;
 	self.layers = {};
 	self.insNameCache = {}
-	self.clipNodes ={};
 	self.allFrameCallBack = {}
 	self.lastFrame = 0
 	local layersData = data.layers;
@@ -22,9 +21,7 @@ function Timeline:ctor(data, mc)
 		local order = FlashUtil.getLayerOrder(self.layerCount, i);
 		if layerData.layerType == "mask" then
 			local clipNode, stencil = FlashUtil.createClippingNode()
-			clipNode:retain();
 			clipNode:addTo(self.mc, order);
-			self.clipNodes[#self.clipNodes+1] = clipNode
 			self.curClipNode = clipNode;
 			layer = Layer:create(layerData, i, self, stencil)
 		elseif layerData.layerType == "masked" then
@@ -33,7 +30,7 @@ function Timeline:ctor(data, mc)
 			local layerNode
 			local align = layerData.align
 			if align then
-				layerNode = mc.doc:createInstance(FlashConfig.defaultNodeName)
+				layerNode = mc.doc:createInstance(FlashConfig.defaultNodeName, {name="layer"})
 				local offsetY = FlashUtil.getOffsetByAlign(align)
 				layerNode:addTo(self.mc, order):move(0, offsetY);
 			end
@@ -62,15 +59,14 @@ function Timeline:addInsNameData(insName, cacheData, childAttr)
 	local tpData = childAttr;
 
 	tpData.group = self.mc.group
-
 	local ins, child
 	self.insNameCache[insName] = cacheData;
 	if childAttr.x == 0 and childAttr.y == 0 then
 		ins = doc:createInstance(itemName, tpData)
-		ins:retain()
+		self.mc:retainNode(ins, itemName)
 	else
 		ins = doc:createInstance(FlashConfig.defaultNodeName, {});
-		ins:retain();
+		self.mc:retainNode(ins, FlashConfig.defaultNodeName)
 		child = doc:createInstance(itemName, tpData)
 		child:addTo(ins, 1, childAttr.name):move(childAttr.x, childAttr.y)
 		cacheData.child = child
@@ -123,11 +119,6 @@ function Timeline:cleanup()
 	for i=1,self.layerCount do
 		local layer = self.layers[i];
 		layer:cleanup()
-	end
-
-	for i,v in ipairs(self.clipNodes) do
-		v:removeSelf()
-		v:release()
 	end
 end
 

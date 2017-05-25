@@ -2,64 +2,66 @@
 local MainScene = class("MainScene", cc.load("mvc").ViewBase)
 
 function MainScene:onCreate()
-    -- add background image
-    display.newSprite("HelloWorld.png")
-        :move(display.center)
-        :addTo(self)
-
-    -- add HelloWorld label
-    cc.Label:createWithSystemFont("你好", "Arial", 40)
-        :move(display.cx, display.cy + 200)
-        :addTo(self)
-
-
-    -- cc.SpriteFrameCache:getInstance():addSpriteFrames("flashRes/test/testimage.plist")
     local Flash = cc.load("flash")
-    local x = math.random(200, 300)
-    local y = math.random(200, 300)
-    -- local waitAnim = Flash:createMC("mojiaoxiaobinggou", "Skill1"):addTo(self):move(x, y)
-    -- local dao = waitAnim:getChildByName("dao")
-    -- local xuecao = Flash:createMC("mojiaoxiaobinggou", "xuecao")
-    -- dao:add(xuecao, 2000)
-    -- waitAnim:setSpeed(1)
-    x = math.random(500, 600)
-    y = math.random(200, 300)
-    -- local bujian1 = waitAnim:getChildByName("bujian1")
-    -- local txt1 = waitAnim:getChildByName("asdf")
-    -- local txt2 = waitAnim:getChildByName("woqu")
-    -- -- txt1:setString("不去了啊！")
-    -- -- txt2:setString("哈哈哈")
-    local waitAnim = Flash:createMC("testBtn")
-    waitAnim:addTo(self):move(0, 0)
-    -- waitAnim:setSpeed(0.2)
+    self.flash = Flash
+    local i = 1
+    while i < 100 do 
+        local view = Flash:createMC("shanzeichui", "wait")
+        view:addTo(self):move(0, 0)
+        view:removeSelfAndClean()
+        i = i + 1
+    end
+    -- return
+    -- local nextShap = view:getChildByName("ui"):getChildByName("nextShap")
+    -- local score = view:getChildByName("ui"):getChildByName("txtScore")
+    -- local shapNode = nextShap:getChildByName("shap")
+    -- local shapeMc = self:createShape()
+    -- shapNode:addChild(shapeMc)
 
-    -- waitAnim:gotoAndPlay(30)
-    -- waitAnim:setEndCallBack(function ( ... )
-    --     waitAnim:gotoAndPlay(45)
-    --     printInfo("anim end")
+    -- local frameCount = 0
+    -- local shapeCnt = 0
+    -- local shapeArr = {}
+    -- view:setEachFrameCallBack(function ( ... )
+    --     frameCount = frameCount + 1
+    --     if frameCount == 50 then
+    --         frameCount = 0
+    --         shapeCnt = shapeCnt + 1
+    --         score:setString(shapeCnt)
+    --         local shapeMc = self:createShape()
+    --         shapeMc:addTo(self):move(math.random(1, 600), 1000):setScale(0.4)
+    --         shapeArr[shapeCnt] = shapeMc
+    --     end
+
+    --     local removeKeys = {}
+    --     for k,v in pairs(shapeArr) do
+    --         local y = v:getPositionY() - 100
+    --         v:move(v:getPositionX(), y)
+    --         if y <= -100 then
+    --             removeKeys[k] = true
+    --         end
+    --     end
+
+    --     for k,_ in pairs(removeKeys) do
+    --         local shape = shapeArr[k]
+    --         shape:removeSelfAndClean()
+    --         shapeArr[k] = nil
+    --     end
     -- end)
+end
 
-    -- waitAnim:setFrameCallBack(3, function ( ... )
-    --     printInfo("anim call back frame 3")
-    -- end)
-
-    --     waitAnim:setFrameCallBack(4, function ( ... )
-    --     printInfo("anim call back frame 4")
-    -- end)
-    -- waitAnim:stop()
-    -- waitAnim:gotoAndStop(1)
-    -- waitAnim:gotoAndStop(5)
-    printLog("Flash", "All run")
-    printInfo((nil == nil))
-
-    -- cc.SpriteFrameCache:getInstance():addSpriteFrames("flashRes/effectGlobalFYN02/effectGlobalFYN02image.plist")
-    -- local sprite = cc.Sprite:createWithSpriteFrameName("Image_1_test.png")
-    -- sprite:addTo(self);
-    -- sprite:setPosition(cc.p(100, 100))
-
-    -- sprite = cc.Sprite:createWithSpriteFrameName("Image_1_effectGlobalFYN02.png")
-    -- sprite:addTo(self);
-    -- sprite:setPosition(cc.p(200, 200))
+function MainScene:createShape()
+    local shapeName = "shap" .. math.random(5)
+    local shapeMc = self.flash:createSpt("mainScene", shapeName)
+    local baseName = "base" .. math.random(9)
+    for i=1,6 do
+        local pos = "p" .. i
+        local posNode = shapeMc:getChildByName(pos)
+        if posNode then
+            local baseMc = self.flash:createSpt("mainScene", baseName)
+            posNode:addChild(baseMc)
+        end
+    end
+    return shapeMc
 end
 
 return MainScene

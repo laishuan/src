@@ -1,21 +1,14 @@
 -- Graphic.lua
 
 -- Graphic.lua
-local Timeline = import(".Timeline");
-local FNode = import('.FNode')
+local FSprite = import('.FSprite')
 
-local Graphic = class("Graphic", FNode)
+local Graphic = class("Graphic", FSprite)
 
 function Graphic:ctor(data, doc, subTpData)
-	self.doc = doc;
-	self.name = data.name;
+	Graphic.super.ctor(self, data, doc, subTpData)
 	self.loop = subTpData.loop;
 	self.firstFrame = subTpData.firstFrame
-	self.group = subTpData.group
-	self.blendMode = subTpData.blendMode
-	self.pblendMode = subTpData.pblendMode
-	self.timeline = Timeline:create(data.timeline, self);
-	self.frameCount = self.timeline.frameCount;
 end
 
 function Graphic:refreshAttr(data)
@@ -43,29 +36,6 @@ function Graphic:updateFrame(frame, det)
 		realFrame = self.firstFrame;
 	end 
 	self.timeline:updateFrame(realFrame, det)
-end
-
-function Graphic:removeSelfAndClean( ... )
-	self:removeSelf()
-	self.timeline:cleanup()
-end
-
-function Graphic:getChildByName(insName)
-	return self.timeline:getChildByName(insName)
-end
-
-function Graphic:setBlendMode(blendMode)
-	if blendMode ~= self.blendMode then
-		self.blendMode = blendMode
-		self.timeline:updateBlendMode()
-	end
-end
-
-function Graphic:setPBlendMode(blendMode)
-	if blendMode ~= self.pblendMode then
-		self.pblendMode = blendMode
-		self.timeline:updateBlendMode()
-	end
 end
 
 return Graphic;

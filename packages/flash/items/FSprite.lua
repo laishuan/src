@@ -1,15 +1,16 @@
 -- FSprite.lua
 
+local FlashConfig = import("..config")
+local FlashUtil = import("..util")
+
 local Timeline = import(".Timeline");
 local FNode = import('.FNode')
 
 local FSprite = class("FSprite", FNode)
 
 function FSprite:ctor(data, doc, subTpData)
-	self.doc = doc;
-	self.name = data.name;
-	self.loop = subTpData.loop;
-	self.firstFrame = subTpData.firstFrame
+	FSprite.super.ctor(self, data, doc, subTpData)
+
 	self.group = subTpData.group
 	self.blendMode = subTpData.blendMode
 	self.pblendMode = subTpData.pblendMode
@@ -18,9 +19,30 @@ function FSprite:ctor(data, doc, subTpData)
 	self.timeline:updateFrame(0, 0)
 end
 
+-- function FSprite:onEnter()
+-- 	FSprite.super.onEnter(self)
+-- end
+
+-- function FSprite:onExit()
+-- 	FSprite.super.onExit(self)
+-- end
+
+-- function FSprite:onEnterTransitionFinish()
+-- 	FSprite.super.onEnterTransitionFinish(self)
+-- end
+
+-- function FSprite:onExitTransitionStart()
+-- 	FSprite.super.onExitTransitionStart(self)
+-- end
+
+-- function FSprite:onCleanup()
+-- 	-- printInfo("onCleanup")
+-- 	FSprite.super.onCleanup(self)
+-- end
+
 function FSprite:removeSelfAndClean( ... )
-	self:removeSelf()
 	self.timeline:cleanup()
+	FSprite.super.removeSelfAndClean(self)
 end
 
 function FSprite:getChildByName(insName)
@@ -40,5 +62,6 @@ function FSprite:setPBlendMode(blendMode)
 		self.timeline:updateBlendMode()
 	end
 end
+
 
 return FSprite;

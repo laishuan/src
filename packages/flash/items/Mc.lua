@@ -1,67 +1,43 @@
 -- Mc.lua
-local Timeline = import(".Timeline");
-local FNode = import('.FNode')
+local FSprite = import('.FSprite')
 
-local Mc = class("Mc", FNode)
+local Mc = class("Mc", FSprite)
 
 function Mc:ctor(data, doc, subTpData)
-	self.doc = doc;
-	self.name = data.name;
-	local group = subTpData.group
-	assert(group, "Mc-ctor: group must not be null, name:" .. self.name)
-	self.group = group
-	self.blendMode = subTpData.blendMode
-	self.pblendMode = subTpData.pblendMode
-	self.frameRate = doc.fileInfo.frameRate
-	self.perFrameTime = 1000/self.frameRate;
-	self.timeline = Timeline:create(data.timeline, self);
-	self.oneLoopTime = (self.timeline.frameCount/self.frameRate)*1000
-
 	self:onNodeEvent("enter", self.onEnter);
 	self:onNodeEvent("exit", self.onExit);
-	self:onNodeEvent("enterTransitionFinish", self.onEnterTransitionFinish);
-	self:onNodeEvent("exitTransitionStart", self.onExitTransitionStart);
-	self:onNodeEvent("cleanup", self.onCleanup);
+	-- self:onNodeEvent("enterTransitionFinish", self.onEnterTransitionFinish);
+	-- self:onNodeEvent("exitTransitionStart", self.onExitTransitionStart);
+	-- self:onNodeEvent("cleanup", self.onCleanup);
+	
+	Mc.super.ctor(self, data, doc, subTpData)
+	assert(self.group, "Mc-ctor: group must not be null, name:" .. self.name)
+	
+
+	self.perFrameTime = 1000/self.frameRate;
+	self.oneLoopTime = (self.timeline.frameCount/self.frameRate)*1000
 
 	self.isPlaying = true;
 	self.total = 0;
-	self.timeline:updateFrame(0, 0)
 end
 
 
 
 function Mc:onEnter()
-	-- printInfo("onEnter:");
+	-- Mc.super.onEnter(self)
 	self.isEnter = true;
 	if self.isPlaying then
 		self.group:addMc(self)
 	end
 end
 
-function Mc:setBlendMode(blendMode)
-	if blendMode ~= self.blendMode then
-		self.blendMode = blendMode
-		self.timeline:updateBlendMode()
-	end
-end
-
-function Mc:setPBlendMode(blendMode)
-	if blendMode ~= self.pblendMode then
-		self.pblendMode = blendMode
-		self.timeline:updateBlendMode()
-	end
-end
-
-function Mc:onCleanup()
-	
-end
 
 function Mc:setSpeed(speed)
 	self.group:setSpeed(speed)
 end
 
 function Mc:onExit()
-	-- printInfo("onExit:")
+	-- Mc.super.onExit(self)
 	self.isEnter = false;
 	if self.isPlaying then
 		self.group:removeMc(self)
@@ -109,11 +85,6 @@ end
 
 function Mc:resetTotal()
 	self.total = 0
-end
-
-function Mc:removeSelfAndClean( ... )
-	self:removeSelf()
-	self.timeline:cleanup()
 end
 
 function Mc:setUpdateStatus(isPlaying)

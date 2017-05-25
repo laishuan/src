@@ -153,8 +153,19 @@ function Layer:cleanup()
 			else
 				ins:removeSelf()
 			end
-			ins:release()
+			-- self.mc:releaseNode(ins, ins.name)
 			v.ins = nil;
+		end
+
+		local child = v.child
+		if child then
+			if child.removeSelfAndClean then
+				child:removeSelfAndClean()
+			else
+				child:removeSelf()
+			end
+			-- self.mc:releaseNode(child, child.name)
+			v.child = nil;
 		end
 	end
 end
