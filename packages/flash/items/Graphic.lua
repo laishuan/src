@@ -7,8 +7,8 @@ local Graphic = class("Graphic", FSprite)
 
 function Graphic:ctor(data, doc, subTpData)
 	Graphic.super.ctor(self, data, doc, subTpData)
-	self.loop = subTpData.loop;
-	self.firstFrame = subTpData.firstFrame
+	self.loop = subTpData.loop or "loop";
+	self.firstFrame = subTpData.firstFrame or 1
 end
 
 function Graphic:refreshAttr(data)

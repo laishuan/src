@@ -6,6 +6,7 @@ local FNode = class("FNode", cc.Sprite)
 
 local totalRetain = 0
 local totalRelease = 0
+local nodeRetainCache = {}
 function FNode:ctor(data, doc, subTpData)
 	self.doc = doc;
 	self.name = data.name
@@ -36,49 +37,50 @@ end
 function FNode:retainNode(node, name)
 	node:retain()
 	totalRetain = totalRetain + 1
-	local cnt = self.retainHash[node]
-	if not cnt then
-		cnt = 0
-		self.retainHash[node] = cnt
+	if not nodeRetainCache[name] then
+		nodeRetainCache[name] = 0
 	end
-	self.retainHash[node] = self.retainHash[node] + 1
+	nodeRetainCache[name] = nodeRetainCache[name] + 1
+
+	local data = self.retainHash[node]
+	if not data then
+		data = {}
+		data.cnt = 0
+		data.name = name
+		self.retainHash[node] = data
+	end
+	data.cnt = data.cnt + 1
 end
 
--- function FNode:releaseNode(node, name)
--- 	printInfo("releaseNode self name:%s release name:%s",self.name, name)
--- 	printInfo("befor")
--- 	self:showRetainHash()
--- 	node:release()
--- 	totalRelease = totalRelease + 1
--- 	if self.retainHash[name] then
--- 		local cnt = self.retainHash[name] - 1
--- 		if cnt <= 0 then
--- 			self.retainHash[name] = nil
--- 		else
--- 			self.retainHash[name] = cnt
--- 		end
--- 	end
--- 	printInfo("after")
--- 	self:showRetainHash()
--- 	printInfo("end retainCnt,releaseCnt:%s,%s", totalRetain, totalRelease)
-
--- end
-
-
-
-function FNode:showRetainHash()
-	dump(self.retainHash, self.name, 15)
+function FNode:releaseNode(node, name)
+	node:release()
+	totalRelease = totalRelease + 1
+	if nodeRetainCache[name] then
+		nodeRetainCache[name] = nodeRetainCache[name] - 1
+	end
+	local data = self.retainHash[node]
+	if data then
+		data.cnt = data.cnt - 1
+		if data.cnt <= 0 then
+			self.retainHash[node] = nil
+		end
+	end
 end
 
 function FNode:removeSelfAndClean()
-	for node,cnt in pairs(self.retainHash) do
-		for i=1,cnt do
-			node:release()
-			totalRelease = totalRelease + 1
+	-- printInfo("%s:removeSelfAndClean", self.name)
+	for node,data in pairs(self.retainHash) do
+		for i=1,data.cnt do
+			self:releaseNode(node, data.name)
 		end
 	end
+	-- dump(self.retainHash)
 	self.retainHash = {}
 	self:removeSelf()
+end
+
+function FNode:showGlobalRetainCache()
+	dump(nodeRetainCache)
 	printInfo("end retainCnt,releaseCnt:%s,%s", totalRetain, totalRelease)
 end
 

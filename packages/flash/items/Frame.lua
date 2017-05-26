@@ -217,11 +217,11 @@ function Frame:createOneElementByData(elementData, index)
 		isEnter = true
 		if childAttr.x == 0 and childAttr.y == 0 then
 			ins = doc:createInstance(childAttr.itemName, tpData)
-			self.mc:retainNode(ins, childAttr.itemName)
+			self.mc:retainNode(ins, self.mc.name .. ":" .. childAttr.itemName)
 			ins:addTo(parentNode, elementOrder, childAttr.name)
 		else
 			ins = doc:createInstance(FlashConfig.defaultNodeName, {});
-			self.mc:retainNode(ins, FlashConfig.defaultNodeName)
+			self.mc:retainNode(ins, self.mc.name .. ":" .. childAttr.itemName .. "--NodeParent")
 			ins:addTo(parentNode, elementOrder)
 			child = doc:createInstance(childAttr.itemName, tpData)
 			child:addTo(ins, 1, childAttr.name):move(childAttr.x, childAttr.y)

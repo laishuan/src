@@ -7,14 +7,13 @@ local FSprite = import('.FSprite')
 local FBtn = class("FBtn", FSprite)
 
 function FBtn:ctor(data, doc, subTpData)
+	data = self:transData(data)
 	FBtn.super.ctor(self, data, doc, subTpData)
-	data = self:transData(data, subTpData)
 	-- dump(data, "test_after_trans:" .. self.name, 15)
 	self:initTouch()
 end
 
-function FBtn:transData(data, subTpData)
-	local touchBounds = subTpData.touchBounds
+function FBtn:transData(data)
 	local newLayerData = {}
 	newLayerData.layerType = "normal"
 	newLayerData.visible = true
@@ -33,18 +32,22 @@ function FBtn:transData(data, subTpData)
 	local layers = ret.timeline.layers
 
 	for index,layer in ipairs(layers) do
-		local bounds = touchBounds["layer" .. index]
-		if bounds then
-			local frame = self:findLayerFrameByIndex(layer, 4)
-			if frame then
-				local frameElements = frame.elements
-				for i,v in ipairs(frameElements) do
-					elements[#elements+1] = v
-					v.childAttr.tp = FlashConfig.itemTypes.Nod
-					v.childAttr.itemName = FlashConfig.defaultNodeName
-					v.childAttr.touchBound = bounds[i]
-					v.childAttr.insName = "touchBound" .. #elements
-				end
+
+		local frame = self:findLayerFrameByIndex(layer, 4)
+		if frame then
+			local frameElements = frame.elements
+			for i,v in ipairs(frameElements) do
+				elements[#elements+1] = v
+				local data = v.childAttr
+				v.childAttr = {}
+
+				v.childAttr.tp = FlashConfig.itemTypes.Nod
+				v.childAttr.itemName = FlashConfig.defaultNodeName
+				v.childAttr.insName = "touchBound" .. #elements
+				v.childAttr.canTouch = true
+				v.childAttr.bound = data.bound
+				v.childAttr.x = data.x
+				v.childAttr.y = data.y
 			end
 		end
 	end
@@ -95,6 +98,7 @@ function FBtn:initTouch()
 
     local function onMyTouchCancelled(touch,event)
     	-- printInfo("touchCancelled")
+    	local target = event:getCurrentTarget()
     	self.timeline:updateFrame(0, 0)
     	target.isTouchBegin = false
     	return true
@@ -131,7 +135,7 @@ function FBtn:findLayerFrameByIndex(layer, index)
 	end
 end
 
-function FBtn:setTouchFunc(func)
+function FBtn:setClickFunc(func)
 	self.touchFunc = func
 end
 

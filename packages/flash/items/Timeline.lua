@@ -54,24 +54,29 @@ function Timeline:setEachFrameCallBack(func)
 end
 
 function Timeline:addInsNameData(insName, cacheData, childAttr)
-	local doc = self.mc.doc
-	local itemName = childAttr.itemName
-	local tpData = childAttr;
+	local oldCacheData = self.insNameCache[insName]
+	if not oldCacheData or oldCacheData ~= cacheData then
+		self.insNameCache[insName] = cacheData;
+		local doc = self.mc.doc
+		local itemName = childAttr.itemName
+		local tpData = childAttr;
 
-	tpData.group = self.mc.group
-	local ins, child
-	self.insNameCache[insName] = cacheData;
-	if childAttr.x == 0 and childAttr.y == 0 then
-		ins = doc:createInstance(itemName, tpData)
-		self.mc:retainNode(ins, itemName)
-	else
-		ins = doc:createInstance(FlashConfig.defaultNodeName, {});
-		self.mc:retainNode(ins, FlashConfig.defaultNodeName)
-		child = doc:createInstance(itemName, tpData)
-		child:addTo(ins, 1, childAttr.name):move(childAttr.x, childAttr.y)
-		cacheData.child = child
+		tpData.group = self.mc.group
+		local ins, child
+		if not cacheData.ins then
+			if childAttr.x == 0 and childAttr.y == 0 then
+				ins = doc:createInstance(itemName, tpData)
+				self.mc:retainNode(ins, self.mc.name .. ":" .. itemName)
+			else
+				ins = doc:createInstance(FlashConfig.defaultNodeName, {});
+				self.mc:retainNode(ins, self.mc.name .. ":" .. itemName .. "--NodeParent")
+				child = doc:createInstance(itemName, tpData)
+				child:addTo(ins, 1, childAttr.name):move(childAttr.x, childAttr.y)
+				cacheData.child = child
+			end
+			cacheData.ins = ins;
+		end
 	end
-	cacheData.ins = ins;
 end
 
 

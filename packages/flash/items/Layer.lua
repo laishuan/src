@@ -153,7 +153,6 @@ function Layer:cleanup()
 			else
 				ins:removeSelf()
 			end
-			-- self.mc:releaseNode(ins, ins.name)
 			v.ins = nil;
 		end
 
@@ -164,7 +163,6 @@ function Layer:cleanup()
 			else
 				child:removeSelf()
 			end
-			-- self.mc:releaseNode(child, child.name)
 			v.child = nil;
 		end
 	end

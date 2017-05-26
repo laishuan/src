@@ -17,9 +17,9 @@ CC_DESIGN_RESOLUTION = {
     height = 960,
     autoscale = "SHOW_ALL",
     callback = function(framesize)
-        local ratio = framesize.width / framesize.height
-        local designRatio = 640/960
-        if ratio < designRatio then
+        local scaleX = framesize.width/640
+        local scaleY = framesize.height/960
+        if scaleX < scaleY then
             return {autoscale = "FIXED_WIDTH"}
         else
             return {autoscale = "FIXED_HEIGHT"}

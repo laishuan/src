@@ -83,8 +83,8 @@ end
 function _M.createNode(itemData, doc, subTpData)
 	local Fnode = import(".items.FNode", PATH)
 	local node = Fnode:create(itemData, doc, subTpData)
-	local bound = subTpData.touchBound
-	if bound then
+	local bound = subTpData.bound
+	if subTpData.canTouch then
 		local width = math.abs(bound.left - bound.right)
 		local height = math.abs(bound.bottom - bound.top)
 		local anchorX, anchorY
