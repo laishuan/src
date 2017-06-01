@@ -1,7 +1,8 @@
 -- config.lua
 local _M = {};
 
-_M.path = "flashRes";
+_M.jsonPath = "flashRes";
+_M.luaPath = "flashRes"
 
 _M.useContentTP = "lua";
 

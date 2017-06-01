@@ -5,23 +5,23 @@ local FlashConfig = import(".config");
 local _M = {};
 
 function _M.getJsonPath (fileName)
-	return FlashConfig.path .. "/" .. fileName .. "/" .. fileName .. ".json";
+	return FlashConfig.jsonPath .. "/" .. fileName .. "/" .. "FlashInfo.json";
 end
 
 function _M.getLuaPath (fileName)
-	return FlashConfig.path .. "." .. fileName .. "." .. fileName;
+	return FlashConfig.luaPath .. "." .. fileName .. "." .. "FlashInfo.lua";
 end
 
 function _M.getSpliteLuaPath(fileName, itemName)
-	return FlashConfig.path .. "." .. fileName .. "." .. itemName;
+	return FlashConfig.luaPath .. "." .. fileName .. "." .. itemName;
 end
 
 function _M.getPlistPath (fileName)
-	return FlashConfig.path .. "/" .. fileName .. "/" .. fileName .."image.plist";
+	return FlashConfig.jsonPath .. "/" .. fileName .. "/" .. fileName .."image.plist";
 end
 
 function _M.getMusicPath(musicName)
-	return FlashConfig.path .. "/" .. musicName;
+	return FlashConfig.jsonPath .. "/" .. musicName;
 end
 
 function _M.createImage(itemData, doc, subTpData)

@@ -89,7 +89,7 @@ function Frame:enter(frame, det)
 			data.child = child;
 			self.elements[#self.elements+1] = data;
 			local realElement = child or ins
-			if isEnter and FlashUtil.kindOfClass(realElement, FlashConfig.itemTypes.Anm) then
+			if isEnter and FlashUtil.kindOfClass(realElement, "Mc") then
 				realElement:updateFrame(detFrame, det)
 			end
 			if childAttr.tp == FlashConfig.itemTypes.Txt then
