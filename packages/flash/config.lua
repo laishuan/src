@@ -3,6 +3,7 @@ local _M = {};
 
 _M.jsonPath = "flashRes";
 _M.luaPath = "flashRes"
+_M.scriptPath = "app.flashScript"
 
 _M.useContentTP = "lua";
 

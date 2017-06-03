@@ -17,6 +17,11 @@ function FSprite:ctor(data, doc, subTpData)
 	self.timeline = Timeline:create(data.timeline, self);
 	self.frameCount = self.timeline.frameCount;
 	self.timeline:updateFrame(0, 0)
+	if data.script then
+		local scriptPath = FlashUtil.getScriptPath(data.script, doc.fileName)
+		local ScriptClass = require(scriptPath)
+		self.controller = ScriptClass:create(self, subTpData.subTp)
+	end
 end
 
 -- function FSprite:onEnter()
@@ -41,6 +46,9 @@ end
 -- end
 
 function FSprite:removeSelfAndClean( ... )
+	if self.controller then
+		self.controller:cleanup()
+	end
 	self.timeline:cleanup()
 	FSprite.super.removeSelfAndClean(self)
 end

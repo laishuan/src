@@ -9,7 +9,7 @@ function _M.getJsonPath (fileName)
 end
 
 function _M.getLuaPath (fileName)
-	return FlashConfig.luaPath .. "." .. fileName .. "." .. "FlashInfo.lua";
+	return FlashConfig.luaPath .. "." .. fileName .. "." .. "FlashInfo";
 end
 
 function _M.getSpliteLuaPath(fileName, itemName)
@@ -22,6 +22,10 @@ end
 
 function _M.getMusicPath(musicName)
 	return FlashConfig.jsonPath .. "/" .. musicName;
+end
+
+function _M.getScriptPath(script, flashName)
+	return FlashConfig.scriptPath  .. "." .. flashName .. "." .. script 
 end
 
 function _M.createImage(itemData, doc, subTpData)

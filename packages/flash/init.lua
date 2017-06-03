@@ -2,11 +2,12 @@ local FlashUtil = import(".util")
 local FlashConfig = import(".config");
 local Doc = import(".Doc");
 local McGroup = import(".McGroup")
-
+local defaultGroup = McGroup:create("___defaule___")
+local BaseFSController = import(".BaseFSController")
 local Flash = {}
 
 Flash.docs = {};
-local defaultGroup = McGroup:create("___defaule___")
+Flash.BaseFSController = BaseFSController
 
 function Flash:getDocByName(fileName)
 	local doc = self.docs[fileName];
