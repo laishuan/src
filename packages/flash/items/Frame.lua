@@ -95,6 +95,13 @@ function Frame:enter(frame, det)
 			if childAttr.tp == FlashConfig.itemTypes.Txt then
 				FlashUtil.setTextAttr(realElement, childAttr)
 			end
+			if realElement.controller then
+				local from = {}
+				from.pFSprit = self.mc
+				from.layerIndex = self.layer.layerIndex
+				from.framIndex = frame
+				realElement.controller:enter(from)
+			end
 		end
 	end
 	for i=1,#self.elements do
@@ -161,6 +168,9 @@ function Frame:exit(newFrame)
 			if FlashUtil.kindOfClass(realIns, "Mc") then
 				realIns:resetTotal()
 			end
+			if realIns.controller then
+				realIns.controller:exit()
+			end
 			cacheData.enter = false;
 		end
 
@@ -187,6 +197,7 @@ function Frame:createOneElementByData(elementData, index)
 	local tpData = childAttr
 	tpData.group = self.mc.group
 	tpData.pblendMode = self.mc.pblendMode or self.mc.blendMode
+	tpData.data = self.mc.controllerData
 	-- print("blendMode:" .. tostring(tpData.blendMode) .. " name:" .. childAttr.itemName)
 	assert(tpData.group, "Frame:createOneElementByData - must had group, name:" .. self.mc.name)
 	if childAttr.loop and childAttr.firstFrame then
@@ -219,6 +230,7 @@ function Frame:createOneElementByData(elementData, index)
 			ins = doc:createInstance(childAttr.itemName, tpData)
 			self.mc:retainNode(ins, self.mc.name .. ":" .. childAttr.itemName)
 			ins:addTo(parentNode, elementOrder, childAttr.name)
+			realNode = ins
 		else
 			ins = doc:createInstance(FlashConfig.defaultNodeName, {});
 			self.mc:retainNode(ins, self.mc.name .. ":" .. childAttr.itemName .. "--NodeParent")
@@ -226,10 +238,13 @@ function Frame:createOneElementByData(elementData, index)
 			child = doc:createInstance(childAttr.itemName, tpData)
 			child:addTo(ins, 1, childAttr.name):move(childAttr.x, childAttr.y)
 			cacheData.child = child
+			realNode = child
 		end
+
 		cacheData.ins = ins;
 		cacheData.tp = tp
 		cacheData.enter = true
+
 	end
 	return ins, child, isEnter;
 end

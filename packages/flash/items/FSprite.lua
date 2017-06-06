@@ -16,11 +16,15 @@ function FSprite:ctor(data, doc, subTpData)
 	self.pblendMode = subTpData.pblendMode
 	self.timeline = Timeline:create(data.timeline, self);
 	self.frameCount = self.timeline.frameCount;
+	self.controllerData = subTpData.data
+	-- if subTpData.data then
+	-- 	self:setData(subTpData.data)
+	-- end
 	self.timeline:updateFrame(0, 0)
 	if data.script then
 		local scriptPath = FlashUtil.getScriptPath(data.script, doc.fileName)
 		local ScriptClass = require(scriptPath)
-		self.controller = ScriptClass:create(self, subTpData.subTp)
+		self.controller = ScriptClass:create(self, subTpData)
 	end
 end
 

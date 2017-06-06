@@ -53,4 +53,8 @@ function Flash:createGra(fileName, itemName, group)
 	return self:createMcByType(FlashConfig.AnmSubTp.Gra, fileName, itemName, group)
 end
 
+function Flash:createFSprit(fileName, itemName, group)
+	return self:createMcByType(FlashConfig.AnmSubTp.Spt, fileName, itemName, group)
+end
+
 return Flash

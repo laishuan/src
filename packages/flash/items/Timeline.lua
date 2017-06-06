@@ -60,7 +60,7 @@ function Timeline:addInsNameData(insName, cacheData, childAttr)
 		local doc = self.mc.doc
 		local itemName = childAttr.itemName
 		local tpData = childAttr;
-
+		tpData.data = self.mc.controllerData
 		tpData.group = self.mc.group
 		local ins, child
 		if not cacheData.ins then
@@ -75,6 +75,8 @@ function Timeline:addInsNameData(insName, cacheData, childAttr)
 				cacheData.child = child
 			end
 			cacheData.ins = ins;
+			local realNode = cacheData.child or cacheData.ins
+
 		end
 	end
 end

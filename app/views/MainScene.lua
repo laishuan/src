@@ -14,7 +14,10 @@ function MainScene:onCreate()
         if self.testMc then
             self.testMc:removeSelfAndClean()
         end
-        self.testMc = Flash:createMovie("shanzeichui"):addTo(self, 1):move(0, 0)
+        self.testMc = Flash:createMovie("shanzeichui", "wait"):addTo(self, 1):move(0, 0)
+        self.testMc:setEndCallBack(function ( ... )
+            self.testMc:stop()
+        end)
         -- addBtn:showGlobalRetainCache()
     end)
 
