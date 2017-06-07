@@ -31,30 +31,31 @@ function Flash:createMC(fileName, itemName, subTpData)
 	return doc:createInstance(itemName, subTpData);
 end
 
-function Flash:createMcByType(tp, fileName, itemName, group)
-	local mcGroup = group and McGroup:create(group) or defaultGroup
-	local doc = self:getDocByName(fileName)
-	local subTpData = {}
+function Flash:createMcByType(tp, fileName, itemName, subTpData)
+	assert(not subTpData or type(subTpData) == "table", "Fhash:createMcByType - invalid param subTpData")
+	local subTpData = subTpData or {}
+	local mcGroup = subTpData.group and McGroup:create(subTpData.group) or defaultGroup
 	subTpData.group = mcGroup
 	subTpData.subTp = tp
+	local doc = self:getDocByName(fileName)
 	itemName = itemName or "scene";
 	return doc:createInstance(itemName, subTpData);
 end
 
-function Flash:createMovie(fileName, itemName, group)
-	return self:createMcByType(FlashConfig.AnmSubTp.Mov, fileName, itemName, group)
+function Flash:createMovie(fileName, itemName, subTpData)
+	return self:createMcByType(FlashConfig.AnmSubTp.Mov, fileName, itemName, subTpData)
 end
 
-function Flash:createBtn(fileName, itemName, group)
-	return self:createMcByType(FlashConfig.AnmSubTp.Btn, fileName, itemName, group)
+function Flash:createBtn(fileName, itemName, subTpData)
+	return self:createMcByType(FlashConfig.AnmSubTp.Btn, fileName, itemName, subTpData)
 end
 
-function Flash:createGra(fileName, itemName, group)
-	return self:createMcByType(FlashConfig.AnmSubTp.Gra, fileName, itemName, group)
+function Flash:createGra(fileName, itemName, subTpData)
+	return self:createMcByType(FlashConfig.AnmSubTp.Gra, fileName, itemName, subTpData)
 end
 
-function Flash:createFSprit(fileName, itemName, group)
-	return self:createMcByType(FlashConfig.AnmSubTp.Spt, fileName, itemName, group)
+function Flash:createFSprit(fileName, itemName, subTpData)
+	return self:createMcByType(FlashConfig.AnmSubTp.Spt, fileName, itemName, subTpData)
 end
 
 return Flash
