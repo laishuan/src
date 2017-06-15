@@ -18,6 +18,7 @@ function Frame:ctor(data, index, layer, parentNode)
 	self.isMotionFrame = (self.tweenType == "motion")
 	self.isEmpty = data.isEmpty;
 	self.elementsData = data.elements;
+	self.bzpGroupArr = data.bzpGroupArr
 
 	self.soundName = data.soundName;
 	self.soundLoopMode = data.soundLoopMode
@@ -130,7 +131,33 @@ function Frame:getAttrByFrame(elementData, detFrame)
 		return elementData.attr;
 	end
 
-	return FlashUtil.interpolatioAttr(elementData.attr, self.nextAttr, detFrame/self.duration, self.totalAngle)
+	if detFrame >= self.duration then
+		return self.nextAttr
+	end
+
+	local percentage = detFrame/self.duration
+	
+	if self.bzpGroupArr then
+		local curGroup
+		local curPercentage
+		for _,pGroup in ipairs(self.bzpGroupArr) do
+			local xBegin, xEnd = pGroup[1].x, pGroup[4].x
+			if percentage >= xBegin and percentage < xEnd then
+				curGroup = pGroup
+				curPercentage = (percentage - xBegin)/(xEnd - xBegin)
+				break
+			end
+		end
+		local x, y = FlashUtil.interpolatioBZ(curGroup, curPercentage)
+		-- printInfo("x,y:%s,%s", x, y)
+		percentage = y
+	end
+
+	return FlashUtil.interpolatioAttr(elementData.attr, self.nextAttr, percentage, self.totalAngle)
+end
+
+function Frame:transPercentTagByBz( ... )
+	-- body
 end
 
 function Frame:exit(newFrame)

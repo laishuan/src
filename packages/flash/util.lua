@@ -166,6 +166,16 @@ function _M.createLink(itemData, doc, subTpData)
 	return flash:createMC(itemData.flashName, itemData.itemName, subTpData);
 end
 
+function _M.interpolatioBZ(pointArr, percentage)
+	local p1, p2, p3, p4 = pointArr[1], pointArr[2], pointArr[3], pointArr[4]
+	local x, y
+	local t1, t2 = percentage, (1 - percentage)
+
+	x = p1.x*t2*t2*t2 + p2.x*3*t1*t2*t2 + p3.x*3*t1*t1*t2 + p4.x*t1*t1*t1
+	y = p1.y*t2*t2*t2 + p2.y*3*t1*t2*t2 + p3.y*3*t1*t1*t2 + p4.y*t1*t1*t1
+	return x, y
+end
+
 function _M.interpolatioByKey (key, attr1, attr2, default, percentage, ret)
 	local value1 = attr1[key] or default;
 	local value2 = attr2[key] or default;
