@@ -26,7 +26,7 @@ function Timeline:ctor(data, mc)
 			layer = Layer:create(layerData, i, self, stencil)
 		elseif layerData.layerType == "masked" then
 			layer = Layer:create(layerData, i, self, self.curClipNode)
-		elseif layerData.layerType == "normal" then
+		elseif layerData.layerType == "normal" or layerData.layerType == "guided" then
 			local layerNode
 			local align = layerData.align
 			if align then
@@ -101,7 +101,9 @@ function Timeline:updateFrame(frame, det)
 	det = det or 0
 	for i=1,self.layerCount do
 		local layer = self.layers[i];
-		layer:updateFrame(newFrame, det)
+		if layer then
+			layer:updateFrame(newFrame, det)
+		end
 	end
 	if self.eachFrameCallBack then
 		self.eachFrameCallBack(newFrame)
