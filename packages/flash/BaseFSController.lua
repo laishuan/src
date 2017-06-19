@@ -9,9 +9,6 @@ function BaseFSController:ctor(fsprit, subData)
 	-- printInfo("BaseFSController ctor %s", fsprit.name)
 	self.fsprit = fsprit
 	self.subTp = subData.subTp
-	self:bindAllIns()
-	self:onCreate()
-	self:onSetData(subData.data)
 end
 
 function BaseFSController:enter(from)
@@ -30,19 +27,11 @@ function BaseFSController:cleanup()
 	self:onCleanup()
 end
 
-function BaseFSController:onCreate()
-end
-
-function BaseFSController:onSetData(data)
-end
 
 function BaseFSController:onEnter(from)
 end
 
 function BaseFSController:onExit(from)
-end
-
-function BaseFSController:bindAllIns()
 end
 
 function BaseFSController:onCleanup()
