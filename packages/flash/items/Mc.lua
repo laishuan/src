@@ -104,15 +104,19 @@ end
 
 function Mc:update(dt)
 	self.total = self.total + dt;
-
-	local curFrame = math.floor(self.total/self.perFrameTime);
-	local det = (self.total%self.perFrameTime)/self.perFrameTime
-	local frameCount = self.timeline.frameCount;
-	if curFrame >= frameCount then
-		self.total = self.total - self.oneLoopTime
-		curFrame =  math.floor(self.total/self.perFrameTime);
-		self.timeline.lastFrame = 0;
+	if self.nextAddOneFrameTime then
+		self.nextAddOneFrameTime = false
+		self.total = self.total + self.perFrameTime
 	end
+	while self.total >= self.oneLoopTime do
+		self.total = self.total - self.oneLoopTime
+		self.timeline.lastFrame = 0;
+	end 
+	if self.total >= self.oneLoopTime - self.perFrameTime then
+		self.nextAddOneFrameTime = true
+	end
+	local curFrame = math.floor(self.total/self.perFrameTime);
+	local det = (self.total%self.perFrameTime)/self.perFrameTime	
 
 	if det < 0.01 then
 		det = 0
