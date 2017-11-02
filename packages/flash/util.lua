@@ -214,7 +214,7 @@ function _M.interpolatioByKeySkewCW (key, attr1, attr2, default, percentage, ret
 	local value2 = attr2[key] or default;
 	local newV
 
-	if value1 == value2 then
+	if value1 == value2 and not totalAngle then
 		newV = value1;
 	else
 		local sub = value2-value1;
@@ -235,7 +235,7 @@ function _M.interpolatioByKeySkewCCW (key, attr1, attr2, default, percentage, re
 	local value2 = attr2[key] or default;
 	local newV
 
-	if value1 == value2 then
+	if value1 == value2 and not totalAngle then
 		newV = value1;
 	else
 		local sub = value2-value1;
