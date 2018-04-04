@@ -19,7 +19,7 @@ end
 function Graphic:updateFrame(frame, det)
 	local realFrame;
 	if self.loop == "loop" then
-		realFrame = self.firstFrame + frame;
+		realFrame = self.firstFrame + frame%self.frameCount;
 		if realFrame >= self.frameCount then
 			realFrame = self.firstFrame;
 		end
