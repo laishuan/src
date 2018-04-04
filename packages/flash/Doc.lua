@@ -19,8 +19,10 @@ function Doc:ctor(fileName, flash)
 		docTable = require(luaPath);
 	end
 
-	local plistPath = FlashUtil.getPlistPath(fileName);
-	cc.SpriteFrameCache:getInstance():addSpriteFrames(plistPath)
+	if FlashConfig.useSheet then
+		local plistPath = FlashUtil.getPlistPath(fileName);
+		cc.SpriteFrameCache:getInstance():addSpriteFrames(plistPath)
+	end
 
 	self.fileName = fileName;
 	self.flash = flash;

@@ -28,8 +28,18 @@ function _M.getScriptPath(script, flashName)
 	return FlashConfig.scriptPath  .. "." .. flashName .. "." .. script 
 end
 
+function _M.getImagePathWithOutSheet(flashName)
+	return FlashConfig.jsonPath .. "/" .. flashName .. "/" .. flashName .. "image/"
+end
+
 function _M.createImage(itemData, doc, subTpData)
-	local sprite = cc.Sprite:createWithSpriteFrameName(itemData.path);
+	local sprite
+	if FlashConfig.useSheet then
+		sprite = cc.Sprite:createWithSpriteFrameName(itemData.path);
+	else
+		local path = _M.getImagePathWithOutSheet(doc.fileName) .. itemData.path
+		sprite = cc.Sprite:create(path)
+	end
 	sprite:setAnchorPoint(cc.p(0, 1));
 	if subTpData.blendMode == "add" or subTpData.pblendMode == "add" then
 		sprite:setBlendFunc(cc.blendFunc(gl.SRC_ALPHA, gl.ONE))
