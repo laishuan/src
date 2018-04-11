@@ -4,7 +4,7 @@ local _M = {};
 _M.jsonPath = "flashRes";
 _M.luaPath = "flashRes"
 _M.scriptPath = "app.flashScript"
-_M.useSheet = false
+_M.useSheet = true
 _M.useContentTP = "lua";
 
 _M.itemTypes = {
