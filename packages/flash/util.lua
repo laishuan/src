@@ -173,7 +173,7 @@ end
 
 function _M.createLink(itemData, doc, subTpData)
 	local flash = doc.flash;
-	return flash:createMC(itemData.flashName, itemData.itemName, subTpData);
+	return flash:createMovie(itemData.flashName, itemData.itemName, subTpData);
 end
 
 function _M.interpolatioBZ(pointArr, percentage)

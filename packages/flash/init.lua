@@ -18,18 +18,6 @@ function Flash:getDocByName(fileName)
 	return doc
 end
 
-function Flash:createMC(fileName, itemName, subTpData)
-	assert(fileName and type(fileName) == "string", "Flash:createMC - invalid param fileName");
-	assert((not itemName) or type(itemName) == "string", "Flash:createMC - invalid param itemName");
-	itemName = itemName or "scene";
-	local doc = self:getDocByName(fileName)
-	if not subTpData then
-		subTpData = {}
-		subTpData.group = defaultGroup
-		subTpData.subTp = FlashConfig.AnmSubTp.Mov
-	end
-	return doc:createInstance(itemName, subTpData);
-end
 
 function Flash:createMcByType(tp, fileName, itemName, subTpData)
 	assert(not subTpData or type(subTpData) == "table", "Fhash:createMcByType - invalid param subTpData")
